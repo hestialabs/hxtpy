@@ -14,12 +14,12 @@ import json
 import logging
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
 from hxtp.core.constants import Channel, MessageType
 from hxtp.core.topics import build_topic
 from hxtp.transport.interface import Transport, TransportState
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 try:
     import gmqtt  # type: ignore

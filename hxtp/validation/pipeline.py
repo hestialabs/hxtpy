@@ -18,9 +18,9 @@ SDK-License-Identifier: MIT
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
 import time
+from dataclasses import dataclass
 from typing import Any, TYPE_CHECKING
 
 from hxtp.core.constants import (
@@ -33,8 +33,6 @@ from hxtp.core.constants import (
 from hxtp.core.signing import verify_signature_with_fallback
 from hxtp.crypto.engine import sha256_hex
 
-if TYPE_CHECKING:
-    from hxtp.core.nonce import NonceCache
 from hxtp.validation.errors import (
     ExpiredTimestampError,
     HashMismatchError,
@@ -48,6 +46,9 @@ from hxtp.validation.errors import (
     SignatureMissingError,
     TimestampFutureError,
 )
+
+if TYPE_CHECKING:
+    from hxtp.core.nonce import NonceCache
 
 
 @dataclass(frozen=True, slots=True)
