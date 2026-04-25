@@ -21,7 +21,7 @@ import asyncio
 import contextlib
 import json
 import time
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Callable

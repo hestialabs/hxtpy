@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 from hxtp.core.constants import (
     MAX_MESSAGE_AGE_SEC,

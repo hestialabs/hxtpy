@@ -30,7 +30,7 @@ from hxtp.core.constants import (
     ValidationStep,
 )
 from hxtp.core.envelope import build_envelope
-from hxtp.core.nonce import NonceCache, generate_nonce
+from hxtp.core.nonce import generate_nonce, NonceCache
 from hxtp.core.signing import (
     sign_message,
     verify_signature,

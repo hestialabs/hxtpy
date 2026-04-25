@@ -11,7 +11,7 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 from hxtp.client.async_client import HxTPClient
 
