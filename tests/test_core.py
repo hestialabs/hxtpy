@@ -4,7 +4,7 @@ from hxtpy.core.canonical import build_canonical, parse_canonical, validate_cano
 from hxtpy.core.constants import PROTOCOL_VERSION
 
 
-def test_build_canonical_success():
+def test_build_canonical_success() -> None:
     msg = {
         "version": PROTOCOL_VERSION,
         "device_id": "dev-123",
@@ -24,7 +24,7 @@ def test_build_canonical_success():
     assert canonical == expected
 
 
-def test_build_canonical_missing_field():
+def test_build_canonical_missing_field() -> None:
     msg = {
         "version": PROTOCOL_VERSION,
         # device_id missing
@@ -41,7 +41,7 @@ def test_build_canonical_missing_field():
         build_canonical(msg)
 
 
-def test_parse_canonical():
+def test_parse_canonical() -> None:
     canonical = (
         f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
     )
@@ -51,7 +51,7 @@ def test_parse_canonical():
     assert parsed["sequence_number"] == "1"
 
 
-def test_validate_canonical():
+def test_validate_canonical() -> None:
     valid = (
         f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
     )
@@ -61,7 +61,7 @@ def test_validate_canonical():
     assert validate_canonical(invalid) is False
 
 
-def test_crypto_engine():
+def test_crypto_engine() -> None:
     from hxtpy.crypto.engine import (
         constant_time_equal,
         generate_nonce,
@@ -89,7 +89,7 @@ def test_crypto_engine():
     assert len(n) == 32
 
 
-def test_validation_pipeline():
+def test_validation_pipeline() -> None:
     from hxtpy.core.envelope import build_envelope
     from hxtpy.validation.pipeline import validate_message
 

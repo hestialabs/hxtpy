@@ -52,6 +52,21 @@ class SyncAdminClient:
     def get_command_status(self, command_id: str) -> dict[str, Any]:
         return self._request("GET", f"/commands/{command_id}")
 
+    def list_devices(self) -> dict[str, Any]:
+        return self._request("GET", "/devices")
+
+    def get_device(self, device_id: str) -> dict[str, Any]:
+        return self._request("GET", f"/devices/{device_id}")
+
+    def list_homes(self) -> dict[str, Any]:
+        return self._request("GET", "/homes")
+
+    def list_rooms(self, home_id: str) -> dict[str, Any]:
+        return self._request("GET", f"/homes/{home_id}/rooms")
+
+    def list_groups(self) -> dict[str, Any]:
+        return self._request("GET", "/groups")
+
     def dispatch_command(
         self,
         target_type: str,
@@ -59,9 +74,13 @@ class SyncAdminClient:
         action: str,
         params: dict[str, Any] | None = None,
         dry_run: bool = False,
+        capability: str | None = None,
     ) -> dict[str, Any]:
         params = params or {}
         payload: dict[str, Any] = {"action": action, "params": params}
+
+        if capability:
+            payload["capability"] = capability
 
         if dry_run:
             if target_type != "device":
