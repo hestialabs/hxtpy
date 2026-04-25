@@ -26,14 +26,14 @@ on:
         branches: [main]
         tags: ["v*"]
         paths:
-            - "hxtp/**"
+            - "hxtpy/**"
             - "tests/**"
             - "pyproject.toml"
             - ".github/workflows/pypi-publish.yml"
     pull_request:
         branches: [main]
         paths:
-            - "hxtp/**"
+            - "hxtpy/**"
             - "tests/**"
             - "pyproject.toml"
             - ".github/workflows/pypi-publish.yml"
@@ -62,13 +62,13 @@ jobs:
                   pip install -e ".[dev]"
 
             - name: Lint (ruff)
-              run: ruff check hxtp/ tests/
+              run: ruff check hxtpy/ tests/
 
             - name: Format check (ruff)
-              run: ruff format --check hxtp/ tests/
+              run: ruff format --check hxtpy/ tests/
 
             - name: Typecheck (mypy)
-              run: mypy hxtp/
+              run: mypy hxtpy/
 
             - name: Test (pytest)
               run: pytest

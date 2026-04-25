@@ -23,16 +23,16 @@ import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from hxtp.core.constants import (
+from hxtpy.core.constants import (
     MAX_MESSAGE_AGE_SEC,
     MAX_PAYLOAD_BYTES,
     PROTOCOL_VERSION,
     TIMESTAMP_SKEW_SEC,
     ProtocolError,
 )
-from hxtp.core.signing import verify_signature_with_fallback
-from hxtp.crypto.engine import sha256_hex
-from hxtp.validation.errors import (
+from hxtpy.core.signing import verify_signature_with_fallback
+from hxtpy.crypto.engine import sha256_hex
+from hxtpy.validation.errors import (
     ExpiredTimestampError,
     HashMismatchError,
     HxTPValidationError,
@@ -49,7 +49,7 @@ from hxtp.validation.errors import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from hxtp.core.nonce import NonceCache
+    from hxtpy.core.nonce import NonceCache
 
 
 @dataclass(frozen=True, slots=True)

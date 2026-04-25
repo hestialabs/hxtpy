@@ -28,7 +28,7 @@ pip install hxtpy[all]
 
 ```python
 import asyncio
-from hxtp.client import HxTPClient
+from hxtpy.client import HxTPClient
 
 async def main():
     client = HxTPClient(
@@ -58,7 +58,7 @@ asyncio.run(main())
 ### Sync Client
 
 ```python
-from hxtp.client import SyncHxTPClient
+from hxtpy.client import SyncHxTPClient
 
 client = SyncHxTPClient(
     url="wss://api.hestialabs.in/ws",
@@ -78,8 +78,8 @@ client.disconnect()
 ### Core Protocol Engine (No Networking)
 
 ```python
-from hxtp.core import build_canonical, parse_canonical, validate_canonical
-from hxtp.crypto import sign_hmac_sha256, sha256_hex, generate_nonce
+from hxtpy.core import build_canonical, parse_canonical, validate_canonical
+from hxtpy.crypto import sign_hmac_sha256, sha256_hex, generate_nonce
 
 # Build canonical string
 canonical = build_canonical({
@@ -97,7 +97,7 @@ secret = bytes.fromhex("a" * 64)
 signature = sign_hmac_sha256(secret, canonical)
 
 # Verify
-from hxtp.crypto import constant_time_equal
+from hxtpy.crypto import constant_time_equal
 expected = sign_hmac_sha256(secret, canonical)
 assert constant_time_equal(signature, expected)
 ```
@@ -105,7 +105,7 @@ assert constant_time_equal(signature, expected)
 ### Validation Pipeline
 
 ```python
-from hxtp.validation import validate_message
+from hxtpy.validation import validate_message
 
 result = validate_message(msg, secret_hex="your-secret", now_ms=None)
 if not result.ok:

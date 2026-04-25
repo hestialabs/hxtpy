@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from hxtp.core.canonical import build_canonical
-from hxtp.core.constants import HMAC_HEX_LENGTH, SECRET_HEX_LENGTH
-from hxtp.crypto.engine import constant_time_equal, sign_hmac_sha256
+from hxtpy.core.canonical import build_canonical
+from hxtpy.core.constants import HMAC_HEX_LENGTH, SECRET_HEX_LENGTH
+from hxtpy.crypto.engine import constant_time_equal, sign_hmac_sha256
 
 
 def sign_message(secret_hex: str, msg: dict[str, Any]) -> str:

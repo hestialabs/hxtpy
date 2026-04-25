@@ -1,7 +1,7 @@
 import pytest
 
-from hxtp.core.canonical import build_canonical, parse_canonical, validate_canonical
-from hxtp.core.constants import PROTOCOL_VERSION
+from hxtpy.core.canonical import build_canonical, parse_canonical, validate_canonical
+from hxtpy.core.constants import PROTOCOL_VERSION
 
 
 def test_build_canonical_success():
@@ -62,7 +62,12 @@ def test_validate_canonical():
 
 
 def test_crypto_engine():
-    from hxtp.crypto.engine import constant_time_equal, generate_nonce, sha256_hex, sign_hmac_sha256
+    from hxtpy.crypto.engine import (
+        constant_time_equal,
+        generate_nonce,
+        sha256_hex,
+        sign_hmac_sha256,
+    )
 
     secret = b"a" * 32
     data = "hello"
@@ -85,8 +90,8 @@ def test_crypto_engine():
 
 
 def test_validation_pipeline():
-    from hxtp.core.envelope import build_envelope
-    from hxtp.validation.pipeline import validate_message
+    from hxtpy.core.envelope import build_envelope
+    from hxtpy.validation.pipeline import validate_message
 
     secret = "a" * 64
 

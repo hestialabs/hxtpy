@@ -7,7 +7,7 @@ Copyright (c) 2026 Hestia Labs
 SDK-License-Identifier: MIT
 """
 
-from hxtp.core import (
+from hxtpy.core import (
     CANONICAL_SEPARATOR,
     HMAC_HEX_LENGTH,
     MAX_MESSAGE_AGE_SEC,

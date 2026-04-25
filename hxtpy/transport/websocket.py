@@ -16,7 +16,7 @@ import asyncio
 import contextlib
 from typing import TYPE_CHECKING
 
-from hxtp.transport.interface import Transport, TransportState
+from hxtpy.transport.interface import Transport, TransportState
 
 try:
     import websockets.asyncio.client as ws_client

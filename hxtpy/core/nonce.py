@@ -11,8 +11,8 @@ from __future__ import annotations
 
 import time
 
-from hxtp.core.constants import MIN_NONCE_BYTES, NONCE_TTL_SEC
-from hxtp.crypto.engine import generate_nonce as _crypto_generate_nonce
+from hxtpy.core.constants import MIN_NONCE_BYTES, NONCE_TTL_SEC
+from hxtpy.crypto.engine import generate_nonce as _crypto_generate_nonce
 
 
 def generate_nonce(byte_length: int = MIN_NONCE_BYTES) -> str:

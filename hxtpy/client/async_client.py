@@ -23,19 +23,19 @@ import json
 import time
 from typing import TYPE_CHECKING, Any
 
-from hxtp.client.types import (
+from hxtpy.client.types import (
     HxTPCommandPayload,
     HxTPConfig,
     HxTPErrorEvent,
     HxTPMessageEvent,
     HxTPResponse,
 )
-from hxtp.core.constants import SECRET_HEX_LENGTH, MessageType
-from hxtp.core.envelope import build_envelope
-from hxtp.core.nonce import NonceCache
-from hxtp.transport.interface import Transport, TransportState
-from hxtp.transport.websocket import WebSocketTransport
-from hxtp.validation.pipeline import validate_message
+from hxtpy.core.constants import SECRET_HEX_LENGTH, MessageType
+from hxtpy.core.envelope import build_envelope
+from hxtpy.core.nonce import NonceCache
+from hxtpy.transport.interface import Transport, TransportState
+from hxtpy.transport.websocket import WebSocketTransport
+from hxtpy.validation.pipeline import validate_message
 
 if TYPE_CHECKING:
     from collections.abc import Callable

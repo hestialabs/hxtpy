@@ -13,19 +13,19 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any, cast
 
-from hxtp.client.async_client import HxTPClient
+from hxtpy.client.async_client import HxTPClient
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from hxtp.client.types import (
+    from hxtpy.client.types import (
         HxTPCommandPayload,
         HxTPConfig,
         HxTPErrorEvent,
         HxTPMessageEvent,
         HxTPResponse,
     )
-    from hxtp.transport.interface import Transport
+    from hxtpy.transport.interface import Transport
 
 
 class SyncHxTPClient:

@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from hxtp.transport.interface import Transport
+    from hxtpy.transport.interface import Transport
 
 
 @dataclass(frozen=True, slots=True)

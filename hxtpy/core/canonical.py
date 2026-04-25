@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from hxtp.core.constants import CANONICAL_SEPARATOR
+from hxtpy.core.constants import CANONICAL_SEPARATOR
 
 
 def build_canonical(msg: dict[str, Any]) -> str:
