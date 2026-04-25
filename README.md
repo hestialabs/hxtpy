@@ -1,8 +1,5 @@
 # HXTP Python SDK
 
-**Official HxTP/3.0 Python SDK** — Protocol reference engine, AI integration
-layer, automation glue, provisioning toolkit, and security audit module.
-
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/hxtp.svg)](https://pypi.org/project/hxtp/)
@@ -114,46 +111,6 @@ result = validate_message(msg, secret_hex="your-secret", now_ms=None)
 if not result.ok:
     print(f"Rejected: {result.code} — {result.reason}")
 ```
-
-## Architecture
-
-```
-hxtp/
-  __init__.py          # Public API surface
-  core/                # Pure protocol engine (no networking)
-    canonical.py       # FROZEN canonical string builder
-    envelope.py        # Signed envelope constructor
-    nonce.py           # Nonce generation + replay cache
-    signing.py         # HMAC-SHA256 sign/verify
-    topics.py          # MQTT topic builder/parser
-    constants.py       # Protocol constants (FROZEN)
-  crypto/              # Cryptographic primitives
-    engine.py          # SHA256, HMAC-SHA256, constant-time compare
-  validation/          # 7-step validation pipeline
-    pipeline.py        # Full pipeline
-    errors.py          # Protocol error exceptions
-  transport/           # Pluggable transport layer
-    interface.py       # Abstract transport
-    websocket.py       # WebSocket transport
-  client/              # High-level client API
-    async_client.py    # Async-first client
-    sync_client.py     # Sync wrapper
-    types.py           # Client types
-  tools/               # AI & automation utilities
-    simulator.py       # Device/fleet simulator
-    test_vectors.py    # Deterministic test vector exporter
-    fuzzer.py          # Message fuzz tester
-```
-
-## Security
-
-- HMAC-SHA256 signatures (no weak hashes)
-- SHA-256 payload hashing
-- Constant-time signature comparison
-- Cryptographic nonce generation (secrets module)
-- 7-step fail-closed validation pipeline
-- Dual-key rotation support
-- No insecure mode, no plaintext mode, no bypass
 
 ## License
 
