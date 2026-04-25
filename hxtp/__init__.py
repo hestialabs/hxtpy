@@ -5,6 +5,8 @@ Copyright (c) 2026 Hestia Labs
 SDK-License-Identifier: MIT
 """
 
+from __future__ import annotations
+
 __version__ = "1.0.0"
 
 from hxtp.client.async_client import HxTPClient
