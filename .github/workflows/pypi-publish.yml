@@ -23,6 +23,7 @@ name: Build & Publish
 
 on:
     push:
+        branches: [main]
         tags: ["v*"]
         paths:
             - "hxtp/**"
@@ -30,6 +31,7 @@ on:
             - "pyproject.toml"
             - ".github/workflows/pypi-publish.yml"
     pull_request:
+        branches: [main]
         paths:
             - "hxtp/**"
             - "tests/**"
