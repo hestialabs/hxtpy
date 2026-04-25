@@ -39,9 +39,11 @@ from hxtp.core.signing import (
 from hxtp.core.topics import build_topic, build_wildcard, parse_topic
 from hxtp.crypto.engine import (
     constant_time_equal,
-    generate_nonce as crypto_generate_nonce,
     sha256_hex,
     sign_hmac_sha256,
+)
+from hxtp.crypto.engine import (
+    generate_nonce as crypto_generate_nonce,
 )
 from hxtp.transport.interface import Transport, TransportState
 from hxtp.validation.errors import (

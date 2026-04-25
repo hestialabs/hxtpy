@@ -33,7 +33,7 @@ class SyncAdminClient:
                 resp_data = response.read().decode("utf-8")
                 if not resp_data:
                     return {"status": "success"}
-                return cast(dict[str, Any], json.loads(resp_data))
+                return cast("dict[str, Any]", json.loads(resp_data))
         except urllib.error.HTTPError as e:
             error_text = e.read().decode("utf-8")
             raise HxTPAdminError(f"HTTP {e.code}: {error_text}") from e
