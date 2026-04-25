@@ -24,6 +24,7 @@ name: SDK Python — Build & Publish
 on:
     push:
         branches: [main]
+        tags: ["v*"]
         paths:
             - "hxtp/**"
             - "tests/**"
