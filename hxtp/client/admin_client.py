@@ -3,13 +3,16 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+
 class HxTPAdminError(Exception):
     pass
+
 
 class SyncAdminClient:
     """
     Synchronous Admin Client for controlling HxTP backend via REST API.
     """
+
     def __init__(self, base_url: str, api_key: str | None = None):
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key

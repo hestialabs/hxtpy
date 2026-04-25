@@ -95,9 +95,7 @@ class HxTPClient:
             if not secret:
                 raise ValueError("secret is required")
             if len(secret) != SECRET_HEX_LENGTH:
-                raise ValueError(
-                    f"secret must be a {SECRET_HEX_LENGTH}-character hex string"
-                )
+                raise ValueError(f"secret must be a {SECRET_HEX_LENGTH}-character hex string")
             self._config = HxTPConfig(
                 url=url,
                 tenant_id=tenant_id,
@@ -137,13 +135,11 @@ class HxTPClient:
         if self._config.replay_protection:
             self._nonce_cache = NonceCache()
 
-        self._transport = self._config.transport or WebSocketTransport(
-            self._config.url
-        )
+        self._transport = self._config.transport or WebSocketTransport(self._config.url)
 
-        self._transport.on_message(lambda data: asyncio.get_event_loop().call_soon(
-            self._handle_message_sync, data
-        ))
+        self._transport.on_message(
+            lambda data: asyncio.get_event_loop().call_soon(self._handle_message_sync, data)
+        )
         self._transport.on_close(lambda code, reason: self._handle_close(code, reason))
         self._transport.on_error(lambda err: self._handle_error(err))
 
@@ -236,10 +232,7 @@ class HxTPClient:
     @property
     def connected(self) -> bool:
         """Whether the client is currently connected."""
-        return (
-            self._transport is not None
-            and self._transport.state == TransportState.CONNECTED
-        )
+        return self._transport is not None and self._transport.state == TransportState.CONNECTED
 
     @property
     def current_sequence(self) -> int:

@@ -29,9 +29,7 @@ def sign_message(secret_hex: str, msg: dict[str, Any]) -> str:
         ValueError: If secret is not a valid 64-character hex string.
     """
     if not secret_hex or len(secret_hex) != SECRET_HEX_LENGTH:
-        raise ValueError(
-            f"Secret must be a {SECRET_HEX_LENGTH}-character hex string (32 bytes)."
-        )
+        raise ValueError(f"Secret must be a {SECRET_HEX_LENGTH}-character hex string (32 bytes).")
     secret_bytes = bytes.fromhex(secret_hex)
     canonical = build_canonical(msg)
     return sign_hmac_sha256(secret_bytes, canonical)

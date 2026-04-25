@@ -283,11 +283,7 @@ def validate_message(
     sequence = msg.get("sequence_number")
     if sequence is None:
         sequence = msg.get("sequence")
-    if (
-        isinstance(sequence, int)
-        and st is not None
-        and not st.check_and_advance(sequence)
-    ):
+    if isinstance(sequence, int) and st is not None and not st.check_and_advance(sequence):
         return fail_with(
             ProtocolError.SEQUENCE_VIOLATION,
             f"Sequence {sequence} <= last {st.last_sequence}",

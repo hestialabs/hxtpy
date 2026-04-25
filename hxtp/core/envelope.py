@@ -76,9 +76,7 @@ def build_envelope(
         ValueError: If secret is not a valid 64-character hex string.
     """
     if not secret_hex or len(secret_hex) != SECRET_HEX_LENGTH:
-        raise ValueError(
-            f"Secret must be a {SECRET_HEX_LENGTH}-character hex string (32 bytes)."
-        )
+        raise ValueError(f"Secret must be a {SECRET_HEX_LENGTH}-character hex string (32 bytes).")
 
     message_id = _generate_uuid4()
     nonce = generate_nonce()

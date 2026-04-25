@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
 try:
     import gmqtt  # type: ignore
+
     _HAS_GMQTT = True
 except ImportError:
     _HAS_GMQTT = False
@@ -55,8 +56,7 @@ class MqttTransport(Transport):
     ) -> None:
         if not _HAS_GMQTT:
             raise ImportError(
-                "gmqtt library is required for MQTT transport. "
-                "Install it with: pip install gmqtt"
+                "gmqtt library is required for MQTT transport. Install it with: pip install gmqtt"
             )
 
         self._host = host

@@ -26,6 +26,7 @@ SECRET_HEX_LENGTH: Final[int] = 64
 
 # ── Message Types ───────────────────────────────────────────────────────
 
+
 class MessageType:
     """HxTP message types. Matches backend Models.ts and embedded Types.h."""
 
@@ -37,12 +38,11 @@ class MessageType:
     ACK: Final[str] = "ack"
     ERROR: Final[str] = "error"
 
-    ALL: Final[frozenset[str]] = frozenset(
-        {STATE, COMMAND, HEARTBEAT, TELEMETRY, OTA, ACK, ERROR}
-    )
+    ALL: Final[frozenset[str]] = frozenset({STATE, COMMAND, HEARTBEAT, TELEMETRY, OTA, ACK, ERROR})
 
 
 # ── MQTT Topic Channels ────────────────────────────────────────────────
+
 
 class Channel:
     """MQTT topic channel segments. Matches backend Topics.ts and JS SDK."""
@@ -59,6 +59,7 @@ class Channel:
 
 # ── Validation Steps ───────────────────────────────────────────────────
 
+
 class ValidationStep:
     """Validation pipeline step identifiers."""
 
@@ -72,6 +73,7 @@ class ValidationStep:
 
 
 # ── Protocol Errors ────────────────────────────────────────────────────
+
 
 class ProtocolError:
     """Protocol error codes. Matches backend Models.ts and JS SDK."""
