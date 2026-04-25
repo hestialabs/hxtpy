@@ -15,14 +15,14 @@ def test_build_canonical_success():
         "timestamp": 1713984000,
         "nonce": "abc",
         "message_type": "command",
-        "payload_hash": "hash123"
+        "payload_hash": "hash123",
     }
     canonical = build_canonical(msg)
     expected = (
-        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|"
-        "1|1713984000|abc|command|hash123"
+        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
     )
     assert canonical == expected
+
 
 def test_build_canonical_missing_field():
     msg = {
@@ -35,30 +35,31 @@ def test_build_canonical_missing_field():
         "timestamp": 1713984000,
         "nonce": "abc",
         "message_type": "command",
-        "payload_hash": "hash123"
+        "payload_hash": "hash123",
     }
     with pytest.raises(ValueError, match="CANONICAL_ERROR: Missing mandatory field at index 1"):
         build_canonical(msg)
 
+
 def test_parse_canonical():
     canonical = (
-        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|"
-        "1|1713984000|abc|command|hash123"
+        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
     )
     parsed = parse_canonical(canonical)
     assert parsed["version"] == PROTOCOL_VERSION
     assert parsed["device_id"] == "dev-123"
     assert parsed["sequence_number"] == "1"
 
+
 def test_validate_canonical():
     valid = (
-        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|"
-        "1|1713984000|abc|command|hash123"
+        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
     )
     assert validate_canonical(valid) is True
 
     invalid = f"{PROTOCOL_VERSION}|dev-123"
     assert validate_canonical(invalid) is False
+
 
 def test_crypto_engine():
     from hxtp.crypto.engine import constant_time_equal, generate_nonce, sha256_hex, sign_hmac_sha256
@@ -82,6 +83,7 @@ def test_crypto_engine():
     n = generate_nonce(16)
     assert len(n) == 32
 
+
 def test_validation_pipeline():
     from hxtp.core.envelope import build_envelope
     from hxtp.validation.pipeline import validate_message
@@ -96,7 +98,7 @@ def test_validation_pipeline():
         message_type="command",
         params={"action": "test"},
         client_id="client-789",
-        sequence=1
+        sequence=1,
     )
 
     # Validate the resulting envelope
@@ -108,4 +110,3 @@ def test_validation_pipeline():
     result = validate_message(envelope, secret_hex=secret)
     assert result.ok is False
     assert result.code == "VERSION_MISMATCH"
-
