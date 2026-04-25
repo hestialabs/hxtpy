@@ -1,7 +1,7 @@
+import contextlib
+
 from hxtp.transport.interface import Transport, TransportState
 from hxtp.transport.websocket import WebSocketTransport
-
-import contextlib
 
 with contextlib.suppress(ImportError):
     from hxtp.transport.mqtt import MqttTransport

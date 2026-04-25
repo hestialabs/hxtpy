@@ -11,17 +11,20 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from hxtp.client.async_client import HxTPClient
-from hxtp.client.types import (
-    HxTPCommandPayload,
-    HxTPConfig,
-    HxTPErrorEvent,
-    HxTPMessageEvent,
-    HxTPResponse,
-)
-from hxtp.transport.interface import Transport
+
+if TYPE_CHECKING:
+    from hxtp.client.types import (
+        HxTPCommandPayload,
+        HxTPConfig,
+        HxTPErrorEvent,
+        HxTPMessageEvent,
+        HxTPResponse,
+    )
+    from hxtp.transport.interface import Transport
 
 
 class SyncHxTPClient:
@@ -92,7 +95,6 @@ class SyncHxTPClient:
         if loop is not None and loop.is_running():
             # We're inside an already-running event loop (e.g., Jupyter)
             # Use nest_asyncio-style approach or create a new thread
-            import concurrent.futures
             import threading
 
             result: Any = None

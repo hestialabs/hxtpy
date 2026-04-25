@@ -14,14 +14,16 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from typing import Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from hxtp.transport.interface import Transport, TransportState
 
 try:
-    import websockets  # type: ignore
     import websockets.asyncio.client as ws_client  # type: ignore
-    from websockets.asyncio.client import ClientConnection  # type: ignore
+
+    if TYPE_CHECKING:
+        from websockets.asyncio.client import ClientConnection  # type: ignore
 
     _HAS_WEBSOCKETS = True
 except ImportError:

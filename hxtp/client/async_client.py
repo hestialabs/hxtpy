@@ -21,7 +21,8 @@ import asyncio
 import contextlib
 import json
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from hxtp.client.types import (
     HxTPCommandPayload,
@@ -35,7 +36,7 @@ from hxtp.core.envelope import build_envelope
 from hxtp.core.nonce import NonceCache
 from hxtp.transport.interface import Transport, TransportState
 from hxtp.transport.websocket import WebSocketTransport
-from hxtp.validation.pipeline import ValidationOptions, validate_message
+from hxtp.validation.pipeline import validate_message
 
 
 class HxTPClient:
