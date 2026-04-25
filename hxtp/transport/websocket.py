@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 from hxtp.transport.interface import Transport, TransportState
 
 try:
-    import websockets.asyncio.client as ws_client
+    import websockets.asyncio.client as ws_client  # type: ignore
 
     if TYPE_CHECKING:
         from collections.abc import Callable
@@ -115,7 +115,7 @@ class WebSocketTransport(Transport):
         msg = await self._connection.recv()
         if isinstance(msg, bytes):
             return msg.decode("utf-8")
-        return msg
+        return str(msg)
 
     def on_message(self, handler: Callable[[str], None]) -> None:
         self._message_handlers.append(handler)
