@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from hxtp.transport.interface import Transport, TransportState
@@ -23,6 +22,8 @@ try:
     import websockets.asyncio.client as ws_client  # type: ignore
 
     if TYPE_CHECKING:
+        from collections.abc import Callable
+
         from websockets.asyncio.client import ClientConnection  # type: ignore
 
     _HAS_WEBSOCKETS = True

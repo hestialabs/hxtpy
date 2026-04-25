@@ -7,11 +7,8 @@ SDK-License-Identifier: MIT
 
 __version__ = "1.0.0"
 
-# ── Client ──────────────────────────────────────────────────────────────
 from hxtp.client.async_client import HxTPClient
 from hxtp.client.sync_client import SyncHxTPClient
-
-# ── Core Protocol Engine ────────────────────────────────────────────────
 from hxtp.core.canonical import (
     build_canonical,
     parse_canonical,
@@ -40,19 +37,13 @@ from hxtp.core.signing import (
     verify_signature_with_fallback,
 )
 from hxtp.core.topics import build_topic, build_wildcard, parse_topic
-
-# ── Crypto ──────────────────────────────────────────────────────────────
 from hxtp.crypto.engine import (
     constant_time_equal,
-    generate_nonce as crypto_generate_nonce,
+    crypto_generate_nonce,
     sha256_hex,
     sign_hmac_sha256,
 )
-
-# ── Transport ───────────────────────────────────────────────────────────
 from hxtp.transport.interface import Transport, TransportState
-
-# ── Validation ──────────────────────────────────────────────────────────
 from hxtp.validation.errors import (
     ExpiredTimestampError,
     HxTPValidationError,

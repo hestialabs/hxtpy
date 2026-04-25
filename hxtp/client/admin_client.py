@@ -1,7 +1,8 @@
 import json
+from typing import Any
+
 import urllib.error
 import urllib.request
-from typing import Any
 
 class HxTPAdminError(Exception):
     pass

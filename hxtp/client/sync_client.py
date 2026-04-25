@@ -11,12 +11,12 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from hxtp.client.async_client import HxTPClient
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from hxtp.client.types import (
         HxTPCommandPayload,
         HxTPConfig,
