@@ -8,7 +8,7 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from hxtp.transport.interface import Transport

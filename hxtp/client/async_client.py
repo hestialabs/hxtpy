@@ -21,7 +21,7 @@ import asyncio
 import contextlib
 import json
 import time
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from hxtp.client.types import (
     HxTPCommandPayload,
@@ -30,7 +30,7 @@ from hxtp.client.types import (
     HxTPMessageEvent,
     HxTPResponse,
 )
-from hxtp.core.constants import MessageType, SECRET_HEX_LENGTH
+from hxtp.core.constants import SECRET_HEX_LENGTH, MessageType
 from hxtp.core.envelope import build_envelope
 from hxtp.core.nonce import NonceCache
 from hxtp.transport.interface import Transport, TransportState

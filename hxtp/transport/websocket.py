@@ -14,10 +14,8 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from hxtp.transport.interface import Transport, TransportState
 
-if TYPE_CHECKING:
-    pass
+from hxtp.transport.interface import Transport, TransportState
 
 try:
     import websockets.asyncio.client as ws_client  # type: ignore

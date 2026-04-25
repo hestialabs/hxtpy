@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import dataclass
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from hxtp.core.constants import (
     MAX_MESSAGE_AGE_SEC,
@@ -32,7 +32,6 @@ from hxtp.core.constants import (
 )
 from hxtp.core.signing import verify_signature_with_fallback
 from hxtp.crypto.engine import sha256_hex
-
 from hxtp.validation.errors import (
     ExpiredTimestampError,
     HashMismatchError,
