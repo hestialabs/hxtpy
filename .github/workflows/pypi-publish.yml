@@ -1,0 +1,180 @@
+# ═══════════════════════════════════════════════════════════════════
+#  HXTP Python SDK — CI & PyPI Publish Pipeline
+#
+#  • Lint (ruff), typecheck (mypy), test (pytest) on every push/PR
+#  • Build and publish to PyPI on push to main (new version only)
+#  • Uses Trusted Publishers (OIDC) — no API tokens needed
+#  • Creates a GitHub Release with install instructions
+#
+#  One-time setup:
+#    1. Go to https://pypi.org/manage/account/publishing/
+#    2. Add a new "pending publisher":
+#       - PyPI project name: hxtpy
+#       - Owner: hestialabs (or your GitHub org)
+#       - Repository: hxtpy (or your repo name)
+#       - Workflow name: pypi-publish.yml
+#       - Environment: pypi
+#    3. After first publish, the package is claimed automatically
+#
+#  Copyright (c) 2026 Hestia Labs
+# ═══════════════════════════════════════════════════════════════════
+
+name: SDK Python — Build & Publish
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - "hxtp/**"
+            - "tests/**"
+            - "pyproject.toml"
+            - ".github/workflows/pypi-publish.yml"
+    pull_request:
+        branches: [main]
+        paths:
+            - "hxtp/**"
+            - "tests/**"
+            - "pyproject.toml"
+            - ".github/workflows/pypi-publish.yml"
+
+jobs:
+    # ── CI: Lint, Typecheck, Test ────────────────────────────────────
+    ci:
+        name: CI — Python ${{ matrix.python-version }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ["3.10", "3.11", "3.12", "3.13"]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ matrix.python-version }}
+
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -e ".[dev]"
+
+            - name: Lint (ruff)
+              run: ruff check hxtp/ tests/
+
+            - name: Format check (ruff)
+              run: ruff format --check hxtp/ tests/
+
+            - name: Typecheck (mypy)
+              run: mypy hxtp/
+
+            - name: Test (pytest)
+              run: pytest
+
+    # ── Build distribution ───────────────────────────────────────────
+    build:
+        name: Build sdist & wheel
+        needs: ci
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Install build tools
+              run: pip install --upgrade pip build
+
+            - name: Build package
+              run: python -m build
+
+            - name: Upload dist artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: python-dist
+                  path: dist/
+                  retention-days: 7
+
+    # ── Publish to PyPI ──────────────────────────────────────────────
+    publish:
+        name: Publish to PyPI
+        needs: build
+        runs-on: ubuntu-latest
+        environment: pypi_key
+        permissions:
+            id-token: write
+            contents: write
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Read version from pyproject.toml
+              id: version
+              run: |
+                  VERSION=$(python -c "
+                  import re
+                  with open('pyproject.toml') as f:
+                      match = re.search(r'^version\s*=\s*\"(.+?)\"', f.read(), re.MULTILINE)
+                      print(match.group(1) if match else '')
+                  ")
+                  echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+                  echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+                  echo "Detected version: $VERSION"
+
+            - name: Check if version already on PyPI
+              id: check
+              run: |
+                  VERSION="${{ steps.version.outputs.version }}"
+                  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/hxtpy/${VERSION}/json")
+                  if [ "$HTTP_CODE" = "200" ]; then
+                    echo "already_published=true" >> "$GITHUB_OUTPUT"
+                    echo "⚠️  Version ${VERSION} already on PyPI — skipping publish."
+                  else
+                    echo "already_published=false" >> "$GITHUB_OUTPUT"
+                    echo "Version ${VERSION} not on PyPI — will publish."
+                  fi
+
+            - name: Download dist artifacts
+              if: steps.check.outputs.already_published == 'false'
+              uses: actions/download-artifact@v4
+              with:
+                  name: python-dist
+                  path: dist/
+
+            - name: Publish to PyPI
+              if: steps.check.outputs.already_published == 'false'
+              uses: pypa/gh-action-pypi-publish@release/v1
+              with:
+                  password: ${{ secrets.PYPI_TOKEN }}
+
+            - name: Create GitHub Release
+              if: steps.check.outputs.already_published == 'false'
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: py-${{ steps.version.outputs.tag }}
+                  name: "hxtpy ${{ steps.version.outputs.tag }}"
+                  body: |
+                      ## hxtpy ${{ steps.version.outputs.version }}
+
+                      Published to [PyPI](https://pypi.org/project/hxtpy/${{ steps.version.outputs.version }}/).
+
+                      ### Install
+
+                      ```bash
+                      pip install hxtpy==${{ steps.version.outputs.version }}
+                      ```
+
+                      ### With MQTT support
+
+                      ```bash
+                      pip install "hxtpy[mqtt]==${{ steps.version.outputs.version }}"
+                      ```
+
+                      ---
+                      Commit: `${{ github.sha }}`
+                  make_latest: false

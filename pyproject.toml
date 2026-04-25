@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hxtpy"
+version = "1.0.0"
+description = "Official HxTP/3.0 Python SDK — Protocol reference engine, AI integration layer, automation glue, provisioning toolkit."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+requires-python = ">=3.10"
+authors = [
+    { name = "Hestia Labs", email = "contact@hestialabs.in" },
+]
+keywords = ["hxtp", "iot", "protocol", "mqtt", "embedded", "security", "hmac", "automation"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Security :: Cryptography",
+    "Topic :: System :: Networking",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+dependencies = [
+    "websockets>=12.0",
+]
+
+[project.optional-dependencies]
+mqtt = ["gmqtt>=0.6.0"]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "mypy>=1.8",
+    "ruff>=0.3",
+]
+all = ["hxtpy[mqtt,dev]"]
+
+
+[project.urls]
+Homepage = "https://github.com/hestialabs/hxtpy"
+Documentation = "https://docs.hestialabs.in/"
+Repository = "https://github.com/hestialabs/hxtpy"
+Issues = "https://github.com/hestialabs/hxtpy/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["hxtp"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "TCH"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
