@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 from hxtp.transport.interface import Transport, TransportState
 
 try:
-    import websockets.asyncio.client as ws_client  # type: ignore
+    import websockets.asyncio.client as ws_client
 
     if TYPE_CHECKING:
         from collections.abc import Callable

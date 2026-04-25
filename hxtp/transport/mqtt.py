@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 try:
-    import gmqtt  # type: ignore
+    import gmqtt
 
     _HAS_GMQTT = True
 except ImportError:
