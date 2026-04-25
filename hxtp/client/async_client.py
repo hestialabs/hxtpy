@@ -23,9 +23,6 @@ import json
 import time
 from typing import Any, TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
 from hxtp.client.types import (
     HxTPCommandPayload,
     HxTPConfig,
@@ -39,6 +36,9 @@ from hxtp.core.nonce import NonceCache
 from hxtp.transport.interface import Transport, TransportState
 from hxtp.transport.websocket import WebSocketTransport
 from hxtp.validation.pipeline import validate_message
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class HxTPClient:

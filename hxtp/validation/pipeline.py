@@ -18,9 +18,9 @@ SDK-License-Identifier: MIT
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import json
 import time
-from dataclasses import dataclass
 from typing import Any, TYPE_CHECKING
 
 from hxtp.core.constants import (

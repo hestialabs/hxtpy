@@ -7,8 +7,6 @@ SDK-License-Identifier: MIT
 
 from __future__ import annotations
 
-__version__ = "1.0.0"
-
 from hxtp.client.async_client import HxTPClient
 from hxtp.client.sync_client import SyncHxTPClient
 from hxtp.core.canonical import (
@@ -32,7 +30,7 @@ from hxtp.core.constants import (
     ValidationStep,
 )
 from hxtp.core.envelope import build_envelope
-from hxtp.core.nonce import generate_nonce, NonceCache
+from hxtp.core.nonce import NonceCache, generate_nonce
 from hxtp.core.signing import (
     sign_message,
     verify_signature,
@@ -56,6 +54,8 @@ from hxtp.validation.errors import (
     SequenceViolationError,
 )
 from hxtp.validation.pipeline import validate_message
+
+__version__ = "1.0.0"
 
 __all__ = [
     # Version

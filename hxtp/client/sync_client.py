@@ -17,6 +17,7 @@ from hxtp.client.async_client import HxTPClient
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
     from hxtp.client.types import (
         HxTPCommandPayload,
         HxTPConfig,
