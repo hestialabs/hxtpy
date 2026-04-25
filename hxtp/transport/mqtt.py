@@ -175,8 +175,9 @@ class MqttTransport(Transport):
     def _on_connect(self, client: Any, flags: Any, rc: Any, properties: Any) -> None:
         Log.info(f"MQTT Connected (rc={rc})")
         # Re-subscribe on reconnect
-        for topic in self._subscriptions:
-            self._client.subscribe(topic)
+        if self._client:
+            for topic in self._subscriptions:
+                self._client.subscribe(topic)
 
     def _on_message(
         self, client: Any, topic: str, payload: bytes, qos: Any, properties: Any

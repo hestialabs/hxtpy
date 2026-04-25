@@ -132,17 +132,17 @@ class WebSocketTransport(Transport):
         try:
             async for message in self._connection:
                 data = message if isinstance(message, str) else message.decode("utf-8")
-                for handler in self._message_handlers:
+                for h in self._message_handlers:
                     with contextlib.suppress(Exception):
-                        handler(data)
+                        h(data)
         except asyncio.CancelledError:
             return
         except Exception as exc:
-            for handler in self._error_handlers:
-                handler(exc)
+            for h in self._error_handlers:
+                h(exc)
         finally:
             self._state = TransportState.DISCONNECTED
             self._connection = None
-            for handler in self._close_handlers:
+            for h in self._close_handlers:
                 with contextlib.suppress(Exception):
-                    handler(1000, "Connection closed")
+                    h(1000, "Connection closed")

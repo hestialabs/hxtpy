@@ -11,7 +11,7 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING, cast
 
 from hxtp.client.async_client import HxTPClient
 
@@ -134,7 +134,7 @@ class SyncHxTPClient:
         payload: dict[str, Any] | HxTPCommandPayload,
     ) -> HxTPResponse:
         """Send a signed command to the server."""
-        return self._run(self._async_client.send_command(payload))
+        return cast("HxTPResponse", self._run(self._async_client.send_command(payload)))
 
     def on_message(self, handler: Callable[[HxTPMessageEvent], None]) -> None:
         """Register a message event handler."""

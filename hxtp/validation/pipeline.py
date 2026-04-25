@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from hxtp.core.constants import (
     MAX_MESSAGE_AGE_SEC,
@@ -204,7 +204,7 @@ def validate_message(
     if now is None:
         now = int(time.time() * 1000)
 
-    def fail_with(code: str, reason: str, exc_cls: type[HxTPValidationError]) -> ValidationResult:
+    def fail_with(code: str, reason: str, exc_cls: Callable[[str], HxTPValidationError]) -> ValidationResult:
         if raise_on_failure:
             raise exc_cls(reason)
         return _fail(code, reason)

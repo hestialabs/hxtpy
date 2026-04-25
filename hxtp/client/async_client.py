@@ -137,9 +137,10 @@ class HxTPClient:
 
         self._transport = self._config.transport or WebSocketTransport(self._config.url)
 
-        self._transport.on_message(
-            lambda data: asyncio.get_event_loop().call_soon(self._handle_message_sync, data)
-        )
+        def _on_message(data: str) -> None:
+            asyncio.get_event_loop().call_soon(self._handle_message_sync, data)
+
+        self._transport.on_message(_on_message)
         self._transport.on_close(lambda code, reason: self._handle_close(code, reason))
         self._transport.on_error(lambda err: self._handle_error(err))
 
