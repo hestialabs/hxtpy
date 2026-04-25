@@ -13,6 +13,7 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
+import contextlib
 from typing import Callable
 
 from hxtp.transport.interface import Transport, TransportState
@@ -88,17 +89,14 @@ class WebSocketTransport(Transport):
     async def disconnect(self) -> None:
         if self._receive_task is not None:
             self._receive_task.cancel()
-            try:
-                await self._receive_task
-            except asyncio.CancelledError:
-                pass
+            if self._receive_task is not None:
+                with contextlib.suppress(asyncio.CancelledError):
+                    await self._receive_task
             self._receive_task = None
 
         if self._connection is not None:
-            try:
+            with contextlib.suppress(Exception):
                 await self._connection.close()
-            except Exception:
-                pass
             self._connection = None
 
         self._state = TransportState.DISCONNECTED
@@ -132,10 +130,8 @@ class WebSocketTransport(Transport):
             async for message in self._connection:
                 data = message if isinstance(message, str) else message.decode("utf-8")
                 for handler in self._message_handlers:
-                    try:
+                    with contextlib.suppress(Exception):
                         handler(data)
-                    except Exception:
-                        pass  # event handlers must not crash the receive loop
         except asyncio.CancelledError:
             return
         except Exception as exc:
@@ -145,7 +141,5 @@ class WebSocketTransport(Transport):
             self._state = TransportState.DISCONNECTED
             self._connection = None
             for handler in self._close_handlers:
-                try:
+                with contextlib.suppress(Exception):
                     handler(1000, "Connection closed")
-                except Exception:
-                    pass

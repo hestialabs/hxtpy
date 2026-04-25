@@ -20,8 +20,8 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 from hxtp.core.constants import (
     MAX_MESSAGE_AGE_SEC,
@@ -30,9 +30,11 @@ from hxtp.core.constants import (
     TIMESTAMP_SKEW_SEC,
     ProtocolError,
 )
-from hxtp.core.nonce import NonceCache
 from hxtp.core.signing import verify_signature_with_fallback
 from hxtp.crypto.engine import sha256_hex
+
+if TYPE_CHECKING:
+    from hxtp.core.nonce import NonceCache
 from hxtp.validation.errors import (
     ExpiredTimestampError,
     HashMismatchError,
@@ -257,13 +259,12 @@ def validate_message(
             NonceMissingError,
         )
 
-    if nc is not None:
-        if nc.check(nonce):
-            return fail_with(
-                ProtocolError.NONCE_REUSED,
-                "Nonce already seen (replay)",
-                ReplayAttackError,
-            )
+    if nc is not None and nc.check(nonce):
+        return fail_with(
+            ProtocolError.NONCE_REUSED,
+            "Nonce already seen (replay)",
+            ReplayAttackError,
+        )
 
     # ── Step 5: Payload Hash ─────────────────────────────────────
     payload_hash = msg.get("payload_hash")
@@ -281,13 +282,16 @@ def validate_message(
     sequence = msg.get("sequence_number")
     if sequence is None:
         sequence = msg.get("sequence")
-    if isinstance(sequence, int) and st is not None:
-        if not st.check_and_advance(sequence):
-            return fail_with(
-                ProtocolError.SEQUENCE_VIOLATION,
-                f"Sequence {sequence} <= last {st.last_sequence}",
-                SequenceViolationError,
-            )
+    if (
+        isinstance(sequence, int)
+        and st is not None
+        and not st.check_and_advance(sequence)
+    ):
+        return fail_with(
+            ProtocolError.SEQUENCE_VIOLATION,
+            f"Sequence {sequence} <= last {st.last_sequence}",
+            SequenceViolationError,
+        )
 
     # ── Step 7: Signature ────────────────────────────────────────
     signature = msg.get("signature")

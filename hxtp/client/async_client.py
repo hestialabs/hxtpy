@@ -18,6 +18,7 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import time
 from typing import Any, Callable
@@ -148,10 +149,8 @@ class HxTPClient:
         self._start_heartbeat()
 
         for handler in self._connect_handlers:
-            try:
+            with contextlib.suppress(Exception):
                 handler()
-            except Exception:
-                pass
 
     async def disconnect(self) -> None:
         """Disconnect gracefully and release resources."""
@@ -275,20 +274,16 @@ class HxTPClient:
         )
 
         for handler in self._message_handlers:
-            try:
+            with contextlib.suppress(Exception):
                 handler(event)
-            except Exception:
-                pass
 
     def _handle_close(self, code: int, reason: str) -> None:
         """Handle transport close."""
         self._stop_heartbeat()
 
         for handler in self._disconnect_handlers:
-            try:
+            with contextlib.suppress(Exception):
                 handler(code, reason)
-            except Exception:
-                pass
 
         if not self._destroyed and self._config.auto_reconnect:
             self._schedule_reconnect()
@@ -301,10 +296,8 @@ class HxTPClient:
         """Emit an error event."""
         event = HxTPErrorEvent(code=code, message=message, fatal=fatal)
         for handler in self._error_handlers:
-            try:
+            with contextlib.suppress(Exception):
                 handler(event)
-            except Exception:
-                pass
 
     def _start_heartbeat(self) -> None:
         """Start heartbeat keepalive task."""
@@ -314,10 +307,8 @@ class HxTPClient:
             while True:
                 await asyncio.sleep(interval)
                 if self._transport and self._transport.state == TransportState.CONNECTED:
-                    try:
+                    with contextlib.suppress(Exception):
                         await self._send_heartbeat()
-                    except Exception:
-                        pass
 
         self._heartbeat_task = asyncio.create_task(heartbeat_loop())
 
@@ -363,10 +354,8 @@ class HxTPClient:
                     self._reconnect_attempt = 0
                     self._start_heartbeat()
                     for handler in self._connect_handlers:
-                        try:
+                        with contextlib.suppress(Exception):
                             handler()
-                        except Exception:
-                            pass
             except Exception:
                 self._schedule_reconnect()
 

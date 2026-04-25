@@ -10,6 +10,7 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 from typing import Any, Callable
@@ -178,16 +179,12 @@ class MqttTransport(Transport):
     def _on_message(self, client: Any, topic: str, payload: bytes, qos: Any, properties: Any) -> None:
         data = payload.decode("utf-8")
         for handler in self._message_handlers:
-            try:
+            with contextlib.suppress(Exception):
                 handler(data)
-            except Exception:
-                pass
 
     def _on_disconnect(self, client: Any, packet: Any, exc: Any) -> None:
         self._state = TransportState.DISCONNECTED
         reason = str(exc) if exc else "Graceful disconnect"
         for handler in self._close_handlers:
-            try:
+            with contextlib.suppress(Exception):
                 handler(0, reason)
-            except Exception:
-                pass
