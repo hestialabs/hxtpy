@@ -19,12 +19,12 @@ from typing import TYPE_CHECKING
 from hxtp.transport.interface import Transport, TransportState
 
 try:
-    import websockets.asyncio.client as ws_client  # type: ignore
+    import websockets.asyncio.client as ws_client
 
     if TYPE_CHECKING:
         from collections.abc import Callable
 
-        from websockets.asyncio.client import ClientConnection  # type: ignore
+        from websockets.asyncio.client import ClientConnection
 
     _HAS_WEBSOCKETS = True
 except ImportError:
@@ -132,17 +132,17 @@ class WebSocketTransport(Transport):
         try:
             async for message in self._connection:
                 data = message if isinstance(message, str) else message.decode("utf-8")
-                for h in self._message_handlers:
+                for msg_h in self._message_handlers:
                     with contextlib.suppress(Exception):
-                        h(data)
+                        msg_h(data)
         except asyncio.CancelledError:
             return
         except Exception as exc:
-            for h in self._error_handlers:
-                h(exc)
+            for err_h in self._error_handlers:
+                err_h(exc)
         finally:
             self._state = TransportState.DISCONNECTED
             self._connection = None
-            for h in self._close_handlers:
+            for close_h in self._close_handlers:
                 with contextlib.suppress(Exception):
-                    h(1000, "Connection closed")
+                    close_h(1000, "Connection closed")
