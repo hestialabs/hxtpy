@@ -37,8 +37,9 @@ class MessageType:
     OTA: Final[str] = "ota"
     ACK: Final[str] = "ack"
     ERROR: Final[str] = "error"
+    HELLO: Final[str] = "hello"
 
-    ALL: Final[frozenset[str]] = frozenset({STATE, COMMAND, HEARTBEAT, TELEMETRY, OTA, ACK, ERROR})
+    ALL: Final[frozenset[str]] = frozenset({STATE, COMMAND, HEARTBEAT, TELEMETRY, OTA, ACK, ERROR, HELLO})
 
 
 # ── MQTT Topic Channels ────────────────────────────────────────────────
@@ -55,6 +56,7 @@ class Channel:
     OTA: Final[str] = "ota"
     OTA_STATUS: Final[str] = "ota_status"
     TELEMETRY: Final[str] = "telemetry"
+    HELLO: Final[str] = "hello"
 
 
 # ── Validation Steps ───────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 """
 HXTP Core — FROZEN Canonical String Builder.
 
-Format: version|message_type|device_id|tenant_id|timestamp|message_id|nonce
+Format: version|device_id|client_id|message_id|request_id|sequence_number|timestamp|nonce|message_type|payload_hash
 
 This format is FROZEN. Any change invalidates ALL signatures across
 all deployed devices (embedded, backend, and client SDKs).
@@ -21,7 +21,7 @@ def build_canonical(msg: dict[str, Any]) -> str:
     """
     Build a canonical string from a message dictionary.
     MCSS v3.0 FROZEN FORMAT (10 fields):
-    version|did|cid|mid|rid|seq|ts|nonce|mtype|phash
+    version|device_id|client_id|message_id|request_id|sequence_number|timestamp|nonce|message_type|payload_hash
     """
     parts: list[str] = [
         str(msg.get("version") or ""),
