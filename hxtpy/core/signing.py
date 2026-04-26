@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from hxtpy.core.canonical import build_canonical
+from hxtpy.core.canonical import canonical_json
 from hxtpy.core.constants import HMAC_HEX_LENGTH, SECRET_HEX_LENGTH
 from hxtpy.crypto.engine import constant_time_equal, sign_hmac_sha256
 
@@ -31,7 +31,9 @@ def sign_message(secret_hex: str, msg: dict[str, Any]) -> str:
     if not secret_hex or len(secret_hex) != SECRET_HEX_LENGTH:
         raise ValueError(f"Secret must be a {SECRET_HEX_LENGTH}-character hex string (32 bytes).")
     secret_bytes = bytes.fromhex(secret_hex)
-    canonical = build_canonical(msg)
+    # Exclude signature from the signable payload if present
+    signable = {k: v for k, v in msg.items() if k != "signature"}
+    canonical = canonical_json(signable)
     return sign_hmac_sha256(secret_bytes, canonical)
 
 

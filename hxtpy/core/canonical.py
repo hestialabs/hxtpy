@@ -17,31 +17,37 @@ from typing import Any
 from hxtpy.core.constants import CANONICAL_SEPARATOR
 
 
-def build_canonical(msg: dict[str, Any]) -> str:
-    """
-    Build a canonical string from a message dictionary.
-    MCSS v3.0 FROZEN FORMAT (10 fields):
-    version|device_id|client_id|message_id|request_id|sequence_number|timestamp|nonce|message_type|payload_hash
-    """
-    parts: list[str] = [
-        str(msg.get("version") or ""),
-        str(msg.get("device_id") or ""),
-        str(msg.get("client_id") or ""),
-        str(msg.get("message_id") or ""),
-        str(msg.get("request_id") or ""),
-        str(msg.get("sequence_number") if msg.get("sequence_number") is not None else ""),
-        str(msg.get("timestamp") or ""),
-        str(msg.get("nonce") or ""),
-        str(msg.get("message_type") or ""),
-        str(msg.get("payload_hash") or ""),
-    ]
+import json
+import unicodedata
 
-    # Strict validation: all 10 fields are mandatory in v3.0
-    for i, part in enumerate(parts):
-        if not part:
-            raise ValueError(f"CANONICAL_ERROR: Missing mandatory field at index {i}")
-
-    return CANONICAL_SEPARATOR.join(parts)
+def canonical_json(data: Any) -> str:
+    """
+    Deterministic JSON stringifier (Strict Mode).
+    - Lexicographical key sorting
+    - Unicode NFC normalization
+    - Stable number formatting (No scientific notation)
+    - Explicit null/boolean/UTF-8
+    """
+    if data is None:
+        return "null"
+    if isinstance(data, bool):
+        return "true" if data else "false"
+    if isinstance(data, (int, float)):
+        # Stable float formatting: no scientific notation, no trailing zeros
+        s = format(data, ".20f").rstrip("0").rstrip(".")
+        if s == "" or s == "-0": s = "0"
+        return s
+    if isinstance(data, str):
+        # JSON string escape + NFC normalization
+        normalized = unicodedata.normalize("NFC", data)
+        return json.dumps(normalized, ensure_ascii=False)
+    if isinstance(data, list):
+        return "[" + ",".join(canonical_json(x) for x in data) + "]"
+    if isinstance(data, dict):
+        keys = sorted(data.keys())
+        parts = [f'{json.dumps(k, ensure_ascii=False)}:{canonical_json(data[k])}' for k in keys]
+        return "{" + ",".join(parts) + "}"
+    raise TypeError(f"HXTP_CANONICAL_ERROR: Unsupported type {type(data)}")
 
 
 def parse_canonical(canonical: str) -> dict[str, str]:
