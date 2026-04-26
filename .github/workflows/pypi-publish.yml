@@ -1,24 +1,3 @@
-# ═══════════════════════════════════════════════════════════════════
-#  HXTP Python SDK — CI & PyPI Publish Pipeline
-#
-#  • Lint (ruff), typecheck (mypy), test (pytest) on every push/PR
-#  • Build and publish to PyPI on push to main (new version only)
-#  • Uses Trusted Publishers (OIDC) — no API tokens needed
-#  • Creates a GitHub Release with install instructions
-#
-#  One-time setup:
-#    1. Go to https://pypi.org/manage/account/publishing/
-#    2. Add a new "pending publisher":
-#       - PyPI project name: hxtpy
-#       - Owner: hestialabs (or your GitHub org)
-#       - Repository: hxtpy (or your repo name)
-#       - Workflow name: pypi-publish.yml
-#       - Environment: pypi_key
-#    3. After first publish, the package is claimed automatically
-#
-#  Copyright (c) 2026 Hestia Labs
-# ═══════════════════════════════════════════════════════════════════
-
 name: Build & Publish
 
 on:
@@ -120,7 +99,7 @@ jobs:
                   VERSION=$(python -c "
                   import re
                   with open('pyproject.toml') as f:
-                      match = re.search(r'^version\s*=\s*\"(.+?)\"', f.read(), re.MULTILINE)
+                      match = re.search(r'^version\s*=\s*[\"\'](.+?)[\"\']', f.read(), re.MULTILINE)
                       print(match.group(1) if match else '')
                   ")
                   echo "version=$VERSION" >> "$GITHUB_OUTPUT"
@@ -157,25 +136,24 @@ jobs:
               if: steps.check.outputs.already_published == 'false'
               uses: softprops/action-gh-release@v2
               with:
-                  tag_name: py-${{ steps.version.outputs.tag }}
-                  name: "hxtpy ${{ steps.version.outputs.tag }}"
+                  tag_name: py-v${{ steps.version.outputs.version }}
+                  name: "hxtpy ${{ steps.version.outputs.version }}"
+                  generate_release_notes: true
                   body: |
-                      ## hxtpy ${{ steps.version.outputs.version }}
+                      ## hxtpy ${{ steps.version.outputs.version }} 🚀
 
-                      Published to [PyPI](https://pypi.org/project/hxtpy/${{ steps.version.outputs.version }}/).
+                      **PyPI:** [hxtpy v${{ steps.version.outputs.version }}](https://pypi.org/project/hxtpy/${{ steps.version.outputs.version }}/)
 
-                      ### Install
-
+                      ### 📦 Installation
                       ```bash
                       pip install hxtpy==${{ steps.version.outputs.version }}
                       ```
 
-                      ### With MQTT support
-
+                      ### 🔌 With MQTT support
                       ```bash
                       pip install "hxtpy[mqtt]==${{ steps.version.outputs.version }}"
                       ```
 
                       ---
-                      Commit: `${{ github.sha }}`
-                  make_latest: false
+                      *Release generated automatically based on pyproject.toml version bump.*
+                  make_latest: true

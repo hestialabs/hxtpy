@@ -57,7 +57,7 @@ from hxtpy.validation.errors import (
 )
 from hxtpy.validation.pipeline import validate_message
 
-__version__ = "1.0.0"
+__version__ = "1.0.8"
 
 __all__ = [
     # Version
