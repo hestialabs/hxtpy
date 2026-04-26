@@ -11,6 +11,7 @@ from hxtpy.client.async_client import HxTPClient
 from hxtpy.client.sync_client import SyncHxTPClient
 from hxtpy.core.canonical import (
     build_canonical,
+    canonical_json,
     parse_canonical,
     validate_canonical,
 )
@@ -57,7 +58,7 @@ from hxtpy.validation.errors import (
 )
 from hxtpy.validation.pipeline import validate_message
 
-__version__ = "1.0.8"
+__version__ = "1.0.9"
 
 __all__ = [
     # Version
@@ -77,6 +78,7 @@ __all__ = [
     "ValidationStep",
     "ProtocolError",
     # Core
+    "canonical_json",
     "build_canonical",
     "parse_canonical",
     "validate_canonical",

@@ -101,12 +101,12 @@ def build_envelope(
         "payload_hash": payload_hash,
     }
 
-    signature = sign_message(secret_hex, msg_fields)
-
     envelope: dict[str, Any] = {
         **msg_fields,
-        "signature": signature,
         "params": params if params is not None else {},
     }
+
+    signature = sign_message(secret_hex, envelope)
+    envelope["signature"] = signature
 
     return envelope

@@ -9,13 +9,12 @@ from __future__ import annotations
 
 from typing import Final
 
-# ── Protocol Constants (FROZEN) ─────────────────────────────────────────
-
-PROTOCOL_VERSION: Final[str] = "HxTP/3.0"
+# ── Protocol Constants (Production Grade) ────────────────────────────────
+PROTOCOL_VERSION: Final[str] = "HxTP/1.0"
 CANONICAL_SEPARATOR: Final[str] = "|"
-MAX_MESSAGE_AGE_SEC: Final[int] = 300
-TIMESTAMP_SKEW_SEC: Final[int] = 60
-NONCE_TTL_SEC: Final[int] = 600
+MAX_MESSAGE_AGE_SEC: Final[int] = 30
+TIMESTAMP_SKEW_SEC: Final[int] = 5
+NONCE_TTL_SEC: Final[int] = 60
 MAX_PAYLOAD_BYTES: Final[int] = 16_384
 HMAC_HEX_LENGTH: Final[int] = 64
 SHA256_HEX_LENGTH: Final[int] = 64
@@ -58,7 +57,6 @@ class Channel:
     OTA: Final[str] = "ota"
     OTA_STATUS: Final[str] = "ota_status"
     TELEMETRY: Final[str] = "telemetry"
-    HELLO: Final[str] = "hello"
 
 
 # ── Validation Steps ───────────────────────────────────────────────────

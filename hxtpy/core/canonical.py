@@ -1,10 +1,6 @@
 """
-HXTP Core — FROZEN Canonical String Builder.
-
-Format: version|device_id|client_id|message_id|request_id|sequence_number|timestamp|nonce|message_type|payload_hash
-
-This format is FROZEN. Any change invalidates ALL signatures across
-all deployed devices (embedded, backend, and client SDKs).
+HXTP Core — Production Grade Canonical JSON Stringifier.
+Deterministic serialization for HMAC-SHA256 signatures.
 
 Copyright (c) 2026 Hestia Labs
 SDK-License-Identifier: MIT
@@ -14,9 +10,7 @@ from __future__ import annotations
 
 import json
 import unicodedata
-from typing import Any
-
-from hxtpy.core.constants import CANONICAL_SEPARATOR
+from typing import Any, cast
 
 
 def canonical_json(data: Any) -> str:
@@ -28,9 +22,8 @@ def canonical_json(data: Any) -> str:
     - Domain Separation: Inject "protocol": "hxtp/1.0"
     """
     # Top-level object injection for Domain Separation
-    if isinstance(data, dict):
-        if "protocol" not in data:
-            data = {**data, "protocol": "hxtp/1.0"}
+    if isinstance(data, dict) and "protocol" not in data:
+        data = {**data, "protocol": "hxtp/1.0"}
 
     def serialize(val: Any) -> str:
         if val is None:
@@ -38,14 +31,12 @@ def canonical_json(data: Any) -> str:
         if isinstance(val, bool):
             return "true" if val else "false"
         if isinstance(val, (int, float)):
-            # Bit-perfect cross-platform number strategy: Canonical Decimal String
-            # Using .20f and trimming trailing zeros
+            # Bit-perfect cross-platform number strategy
             s = format(val, ".20f").rstrip("0").rstrip(".")
             if s == "" or s == "-0":
                 s = "0"
             return f'"{s}"'
         if isinstance(val, str):
-            # JSON string escape + NFC normalization
             normalized = unicodedata.normalize("NFC", val)
             return json.dumps(normalized, ensure_ascii=False)
         if isinstance(val, list):
@@ -59,24 +50,20 @@ def canonical_json(data: Any) -> str:
     return serialize(data)
 
 
-def parse_canonical(canonical: str) -> dict[str, str]:
-    """Parse a canonical string back into named components."""
-    parts = canonical.split(CANONICAL_SEPARATOR)
-    return {
-        "version": parts[0] if len(parts) > 0 else "",
-        "device_id": parts[1] if len(parts) > 1 else "",
-        "client_id": parts[2] if len(parts) > 2 else "",
-        "message_id": parts[3] if len(parts) > 3 else "",
-        "request_id": parts[4] if len(parts) > 4 else "",
-        "sequence_number": parts[5] if len(parts) > 5 else "",
-        "timestamp": parts[6] if len(parts) > 6 else "",
-        "nonce": parts[7] if len(parts) > 7 else "",
-        "message_type": parts[8] if len(parts) > 8 else "",
-        "payload_hash": parts[9] if len(parts) > 9 else "",
-    }
+def build_canonical(msg: dict[str, Any]) -> str:
+    """Legacy wrapper for CanonicalJSON (Production Grade)."""
+    return canonical_json(msg)
+
+
+def parse_canonical(canonical: str) -> dict[str, Any]:
+    """Legacy helper (Deprecated — use JSON parsing)."""
+    return cast("dict[str, Any]", json.loads(canonical))
 
 
 def validate_canonical(canonical: str) -> bool:
-    """Validate that a canonical string has exactly 10 non-empty fields."""
-    parts = canonical.split(CANONICAL_SEPARATOR)
-    return len(parts) == 10 and all(len(p) > 0 for p in parts)
+    """Legacy helper (Deprecated)."""
+    try:
+        json.loads(canonical)
+        return True
+    except Exception:
+        return False

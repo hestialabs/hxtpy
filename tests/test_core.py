@@ -1,7 +1,28 @@
-import pytest
+import json
 
-from hxtpy.core.canonical import build_canonical, parse_canonical, validate_canonical
+from hxtpy.core.canonical import (
+    build_canonical,
+    canonical_json,
+    parse_canonical,
+    validate_canonical,
+)
 from hxtpy.core.constants import PROTOCOL_VERSION
+
+
+def test_canonical_json_determinism() -> None:
+    msg = {"z": 1, "a": 2, "protocol": "hxtp/1.0"}
+    # Keys must be sorted: "a" then "protocol" then "z"
+    # Numbers must be stringified
+    res = canonical_json(msg)
+    expected = '{"a":"2","protocol":"hxtp/1.0","z":"1"}'
+    assert res == expected
+
+
+def test_canonical_json_number_formatting() -> None:
+    assert canonical_json({"v": 123}) == '{"protocol":"hxtp/1.0","v":"123"}'
+    # Match TS toFixed(20) precision for 1.2
+    assert canonical_json({"v": 1.2}) == '{"protocol":"hxtp/1.0","v":"1.19999999999999995559"}'
+    assert canonical_json({"v": 1.0}) == '{"protocol":"hxtp/1.0","v":"1"}'
 
 
 def test_build_canonical_success() -> None:
@@ -18,47 +39,24 @@ def test_build_canonical_success() -> None:
         "payload_hash": "hash123",
     }
     canonical = build_canonical(msg)
-    expected = (
-        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
-    )
-    assert canonical == expected
-
-
-def test_build_canonical_missing_field() -> None:
-    msg = {
-        "version": PROTOCOL_VERSION,
-        # device_id missing
-        "client_id": "client-456",
-        "message_id": "msg-789",
-        "request_id": "req-000",
-        "sequence_number": 1,
-        "timestamp": 1713984000,
-        "nonce": "abc",
-        "message_type": "command",
-        "payload_hash": "hash123",
-    }
-    with pytest.raises(ValueError, match="CANONICAL_ERROR: Missing mandatory field at index 1"):
-        build_canonical(msg)
-
-
-def test_parse_canonical() -> None:
-    canonical = (
-        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
-    )
-    parsed = parse_canonical(canonical)
-    assert parsed["version"] == PROTOCOL_VERSION
+    parsed = json.loads(canonical)
+    assert parsed["protocol"] == "hxtp/1.0"
     assert parsed["device_id"] == "dev-123"
     assert parsed["sequence_number"] == "1"
 
 
-def test_validate_canonical() -> None:
-    valid = (
-        f"{PROTOCOL_VERSION}|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
-    )
-    assert validate_canonical(valid) is True
+def test_parse_canonical() -> None:
+    data = {"hello": "world"}
+    canonical = canonical_json(data)
+    parsed = parse_canonical(canonical)
+    assert parsed["hello"] == "world"
+    assert parsed["protocol"] == "hxtp/1.0"
 
-    invalid = f"{PROTOCOL_VERSION}|dev-123"
-    assert validate_canonical(invalid) is False
+
+def test_validate_canonical() -> None:
+    valid = canonical_json({"a": 1})
+    assert validate_canonical(valid) is True
+    assert validate_canonical("invalid json") is False
 
 
 def test_crypto_engine() -> None:
@@ -111,7 +109,7 @@ def test_validation_pipeline() -> None:
     assert result.ok is True
 
     # Test version mismatch by tampering with the envelope
-    envelope["version"] = "HxTP/1.0"
+    envelope["version"] = "HxTP/0.1"
     result = validate_message(envelope, secret_hex=secret)
     assert result.ok is False
     assert result.code == "VERSION_MISMATCH"
