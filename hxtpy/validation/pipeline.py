@@ -246,7 +246,7 @@ def validate_message(
     # ── Step 3: Payload Size ─────────────────────────────────────
     params = msg.get("params")
     if params is not None:
-        params_str = json.dumps(params, separators=(",", ":"))
+        params_str = json.dumps(params, sort_keys=True, separators=(",", ":"))
         if len(params_str.encode("utf-8")) > max_pl:
             return fail_with(
                 ProtocolError.PAYLOAD_TOO_LARGE,
@@ -273,7 +273,7 @@ def validate_message(
     # ── Step 5: Payload Hash ─────────────────────────────────────
     payload_hash = msg.get("payload_hash")
     if payload_hash:
-        params_json = json.dumps(params if params is not None else {}, separators=(",", ":"))
+        params_json = json.dumps(params if params is not None else {}, sort_keys=True, separators=(",", ":"))
         computed = sha256_hex(params_json)
         if computed != payload_hash:
             return fail_with(

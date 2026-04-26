@@ -25,7 +25,7 @@ class SyncAdminClient:
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
-        data = json.dumps(payload).encode("utf-8") if payload else None
+        data = json.dumps(payload, sort_keys=True, separators=(',', ':')).encode("utf-8") if payload else None
         req = urllib.request.Request(url, data=data, headers=headers, method=method)
 
         try:
@@ -41,13 +41,13 @@ class SyncAdminClient:
             raise HxTPAdminError(f"Request failed: {str(e)}") from e
 
     def get_device_state(self, device_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/device/{device_id}/state")
+        return self._request("GET", f"/devices/{device_id}/state")
 
     def get_device_capabilities(self, device_id: str) -> dict[str, Any]:
         return self._request("GET", f"/devices/{device_id}/capabilities")
 
     def get_device_command_history(self, device_id: str) -> dict[str, Any]:
-        return self._request("GET", f"/device/{device_id}/commands")
+        return self._request("GET", f"/devices/{device_id}/commands")
 
     def get_command_status(self, command_id: str) -> dict[str, Any]:
         return self._request("GET", f"/commands/{command_id}")
@@ -78,13 +78,13 @@ class SyncAdminClient:
         payload: dict[str, Any] = {"device_type": device_type, "home_id": home_id}
         if room_id:
             payload["room_id"] = room_id
-        return self._request("POST", "/device/register", payload)
+        return self._request("POST", "/devices/register", payload)
 
     def rotate_device_secret(self, device_id: str) -> dict[str, Any]:
-        return self._request("POST", f"/device/{device_id}/rotate-secret")
+        return self._request("POST", f"/devices/{device_id}/rotate-secret")
 
     def revoke_device(self, device_id: str) -> dict[str, Any]:
-        return self._request("POST", f"/device/{device_id}/revoke")
+        return self._request("POST", f"/devices/{device_id}/revoke")
 
     # ── Home & Room Management ──────────────────────────────────────────────
 
@@ -180,7 +180,7 @@ class SyncAdminClient:
 
         if target_type == "device":
             t_id = target_id[0] if isinstance(target_id, list) else target_id
-            return self._request("POST", f"/device/{t_id}/command", payload)
+            return self._request("POST", f"/devices/{t_id}/command", payload)
 
         elif target_type == "devices":
             payload["device_ids"] = target_id if isinstance(target_id, list) else [target_id]
@@ -198,4 +198,4 @@ class SyncAdminClient:
             raise ValueError(f"Invalid target_type: {target_type}")
 
     def confirm_command(self, device_id: str, token: str) -> dict[str, Any]:
-        return self._request("POST", f"/device/{device_id}/command/confirm", {"token": token})
+        return self._request("POST", f"/devices/{device_id}/command/confirm", {"token": token})

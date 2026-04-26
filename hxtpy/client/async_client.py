@@ -205,7 +205,7 @@ class HxTPClient:
             sequence=self._sequence,
         )
 
-        envelope_json = json.dumps(envelope, separators=(",", ":"))
+        envelope_json = json.dumps(envelope, sort_keys=True, separators=(",", ":"))
         await self._transport.send(envelope_json)
 
         return HxTPResponse(
@@ -326,7 +326,7 @@ class HxTPClient:
             sequence=self._sequence,
         )
 
-        await self._transport.send(json.dumps(envelope, separators=(",", ":")))
+        await self._transport.send(json.dumps(envelope, sort_keys=True, separators=(",", ":")))
 
     def _stop_heartbeat(self) -> None:
         """Stop heartbeat task."""

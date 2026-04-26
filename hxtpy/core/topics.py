@@ -1,7 +1,7 @@
 """
 HXTP Core — MQTT Topic Builder and Parser.
 
-Format: hxtpy/{tenantId}/device/{deviceId}/{channel}
+Format: hxtp/{tenantId}/device/{deviceId}/{channel}
 
 Copyright (c) 2026 Hestia Labs
 SDK-License-Identifier: MIT
@@ -24,7 +24,7 @@ def build_topic(tenant_id: str, device_id: str, channel: str) -> str:
     Returns:
         MQTT topic string.
     """
-    return f"hxtpy/{tenant_id}/device/{device_id}/{channel}"
+    return f"hxtp/{tenant_id}/device/{device_id}/{channel}"
 
 
 def build_wildcard(channel: str) -> str:
@@ -37,12 +37,12 @@ def build_wildcard(channel: str) -> str:
     Returns:
         MQTT wildcard topic string.
     """
-    return f"hxtpy/+/device/+/{channel}"
+    return f"hxtp/+/device/+/{channel}"
 
 
 def build_full_wildcard() -> str:
     """Build the full wildcard for all channels."""
-    return "hxtpy/+/device/+/#"
+    return "hxtp/+/device/+/#"
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,7 +67,7 @@ def parse_topic(topic: str) -> ParsedTopic | None:
         ParsedTopic dataclass or None if invalid format.
     """
     parts = topic.split("/")
-    if len(parts) != 5 or parts[0] != "hxtpy" or parts[2] != "device":
+    if len(parts) != 5 or parts[0] != "hxtp" or parts[2] != "device":
         return None
     return ParsedTopic(
         tenant_id=parts[1],
