@@ -22,32 +22,41 @@ import unicodedata
 
 def canonical_json(data: Any) -> str:
     """
-    Deterministic JSON stringifier (Strict Mode).
+    Deterministic JSON stringifier (Production Grade).
     - Lexicographical key sorting
     - Unicode NFC normalization
-    - Stable number formatting (No scientific notation)
-    - Explicit null/boolean/UTF-8
+    - Numbers converted to strict decimal strings (avoids IEEE-754 divergence)
+    - Domain Separation: Inject "protocol": "hxtp/1.0"
     """
-    if data is None:
-        return "null"
-    if isinstance(data, bool):
-        return "true" if data else "false"
-    if isinstance(data, (int, float)):
-        # Stable float formatting: no scientific notation, no trailing zeros
-        s = format(data, ".20f").rstrip("0").rstrip(".")
-        if s == "" or s == "-0": s = "0"
-        return s
-    if isinstance(data, str):
-        # JSON string escape + NFC normalization
-        normalized = unicodedata.normalize("NFC", data)
-        return json.dumps(normalized, ensure_ascii=False)
-    if isinstance(data, list):
-        return "[" + ",".join(canonical_json(x) for x in data) + "]"
+    # Top-level object injection for Domain Separation
     if isinstance(data, dict):
-        keys = sorted(data.keys())
-        parts = [f'{json.dumps(k, ensure_ascii=False)}:{canonical_json(data[k])}' for k in keys]
-        return "{" + ",".join(parts) + "}"
-    raise TypeError(f"HXTP_CANONICAL_ERROR: Unsupported type {type(data)}")
+        if "protocol" not in data:
+            data = {**data, "protocol": "hxtp/1.0"}
+
+    def serialize(val: Any) -> str:
+        if val is None:
+            return "null"
+        if isinstance(val, bool):
+            return "true" if val else "false"
+        if isinstance(val, (int, float)):
+            # Bit-perfect cross-platform number strategy: Canonical Decimal String
+            # Using .20f and trimming trailing zeros
+            s = format(val, ".20f").rstrip("0").rstrip(".")
+            if s == "" or s == "-0": s = "0"
+            return f'"{s}"'
+        if isinstance(val, str):
+            # JSON string escape + NFC normalization
+            normalized = unicodedata.normalize("NFC", val)
+            return json.dumps(normalized, ensure_ascii=False)
+        if isinstance(val, list):
+            return "[" + ",".join(serialize(x) for x in val) + "]"
+        if isinstance(val, dict):
+            keys = sorted(val.keys())
+            parts = [f'{json.dumps(k, ensure_ascii=False)}:{serialize(val[k])}' for k in keys]
+            return "{" + ",".join(parts) + "}"
+        raise TypeError(f"HXTP_CANONICAL_ERROR: Unsupported type {type(val)}")
+
+    return serialize(data)
 
 
 def parse_canonical(canonical: str) -> dict[str, str]:
