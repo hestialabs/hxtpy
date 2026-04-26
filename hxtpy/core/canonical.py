@@ -19,11 +19,11 @@ def canonical_json(data: Any) -> str:
     - Lexicographical key sorting
     - Unicode NFC normalization
     - Numbers converted to strict decimal strings (avoids IEEE-754 divergence)
-    - Domain Separation: Inject "protocol": "hxtp/1.0"
+    - Domain Separation: Inject "protocol": "hxtp/3.0"
     """
     # Top-level object injection for Domain Separation
     if isinstance(data, dict) and "protocol" not in data:
-        data = {**data, "protocol": "hxtp/1.0"}
+        data = {**data, "protocol": "hxtp/3.0"}
 
     def serialize(val: Any) -> str:
         if val is None:

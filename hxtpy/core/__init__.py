@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Final
 
 # ── Protocol Constants (Production Grade) ────────────────────────────────
-PROTOCOL_VERSION: Final[str] = "HxTP/1.0"
+PROTOCOL_VERSION: Final[str] = "HxTP/3.0"
 CANONICAL_SEPARATOR: Final[str] = "|"
 MAX_MESSAGE_AGE_SEC: Final[int] = 30
 TIMESTAMP_SKEW_SEC: Final[int] = 5

@@ -1,29 +1,21 @@
+import pytest
 import json
-
-from hxtpy.core.canonical import (
-    build_canonical,
-    canonical_json,
-    parse_canonical,
-    validate_canonical,
-)
+from hxtpy.core.canonical import canonical_json, build_canonical, parse_canonical, validate_canonical
 from hxtpy.core.constants import PROTOCOL_VERSION
 
-
 def test_canonical_json_determinism() -> None:
-    msg = {"z": 1, "a": 2, "protocol": "hxtp/1.0"}
+    msg = {"z": 1, "a": 2, "protocol": "hxtp/3.0"}
     # Keys must be sorted: "a" then "protocol" then "z"
     # Numbers must be stringified
     res = canonical_json(msg)
-    expected = '{"a":"2","protocol":"hxtp/1.0","z":"1"}'
+    expected = '{"a":"2","protocol":"hxtp/3.0","z":"1"}'
     assert res == expected
 
-
 def test_canonical_json_number_formatting() -> None:
-    assert canonical_json({"v": 123}) == '{"protocol":"hxtp/1.0","v":"123"}'
+    assert canonical_json({"v": 123}) == '{"protocol":"hxtp/3.0","v":"123"}'
     # Match TS toFixed(20) precision for 1.2
-    assert canonical_json({"v": 1.2}) == '{"protocol":"hxtp/1.0","v":"1.19999999999999995559"}'
-    assert canonical_json({"v": 1.0}) == '{"protocol":"hxtp/1.0","v":"1"}'
-
+    assert canonical_json({"v": 1.2}) == '{"protocol":"hxtp/3.0","v":"1.19999999999999995559"}'
+    assert canonical_json({"v": 1.0}) == '{"protocol":"hxtp/3.0","v":"1"}'
 
 def test_build_canonical_success() -> None:
     msg = {
@@ -40,24 +32,21 @@ def test_build_canonical_success() -> None:
     }
     canonical = build_canonical(msg)
     parsed = json.loads(canonical)
-    assert parsed["protocol"] == "hxtp/1.0"
+    assert parsed["protocol"] == "hxtp/3.0"
     assert parsed["device_id"] == "dev-123"
     assert parsed["sequence_number"] == "1"
-
 
 def test_parse_canonical() -> None:
     data = {"hello": "world"}
     canonical = canonical_json(data)
     parsed = parse_canonical(canonical)
     assert parsed["hello"] == "world"
-    assert parsed["protocol"] == "hxtp/1.0"
-
+    assert parsed["protocol"] == "hxtp/3.0"
 
 def test_validate_canonical() -> None:
     valid = canonical_json({"a": 1})
     assert validate_canonical(valid) is True
     assert validate_canonical("invalid json") is False
-
 
 def test_crypto_engine() -> None:
     from hxtpy.crypto.engine import (
@@ -85,7 +74,6 @@ def test_crypto_engine() -> None:
     # Nonce
     n = generate_nonce(16)
     assert len(n) == 32
-
 
 def test_validation_pipeline() -> None:
     from hxtpy.core.envelope import build_envelope
