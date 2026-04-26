@@ -273,7 +273,9 @@ def validate_message(
     # ── Step 5: Payload Hash ─────────────────────────────────────
     payload_hash = msg.get("payload_hash")
     if payload_hash:
-        params_json = json.dumps(params if params is not None else {}, sort_keys=True, separators=(",", ":"))
+        params_json = json.dumps(
+            params if params is not None else {}, sort_keys=True, separators=(",", ":")
+        )
         computed = sha256_hex(params_json)
         if computed != payload_hash:
             return fail_with(

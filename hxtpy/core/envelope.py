@@ -83,7 +83,9 @@ def build_envelope(
     timestamp = int(time.time() * 1000)
 
     # Use compact JSON separators — matches JSON.stringify() behavior
-    params_json = json.dumps(params if params is not None else {}, sort_keys=True, separators=(",", ":"))
+    params_json = json.dumps(
+        params if params is not None else {}, sort_keys=True, separators=(",", ":")
+    )
     payload_hash = sha256_hex(params_json)
 
     msg_fields: dict[str, Any] = {

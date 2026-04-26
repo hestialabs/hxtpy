@@ -12,13 +12,12 @@ SDK-License-Identifier: MIT
 
 from __future__ import annotations
 
+import json
+import unicodedata
 from typing import Any
 
 from hxtpy.core.constants import CANONICAL_SEPARATOR
 
-
-import json
-import unicodedata
 
 def canonical_json(data: Any) -> str:
     """
@@ -42,7 +41,8 @@ def canonical_json(data: Any) -> str:
             # Bit-perfect cross-platform number strategy: Canonical Decimal String
             # Using .20f and trimming trailing zeros
             s = format(val, ".20f").rstrip("0").rstrip(".")
-            if s == "" or s == "-0": s = "0"
+            if s == "" or s == "-0":
+                s = "0"
             return f'"{s}"'
         if isinstance(val, str):
             # JSON string escape + NFC normalization
@@ -52,7 +52,7 @@ def canonical_json(data: Any) -> str:
             return "[" + ",".join(serialize(x) for x in val) + "]"
         if isinstance(val, dict):
             keys = sorted(val.keys())
-            parts = [f'{json.dumps(k, ensure_ascii=False)}:{serialize(val[k])}' for k in keys]
+            parts = [f"{json.dumps(k, ensure_ascii=False)}:{serialize(val[k])}" for k in keys]
             return "{" + ",".join(parts) + "}"
         raise TypeError(f"HXTP_CANONICAL_ERROR: Unsupported type {type(val)}")
 

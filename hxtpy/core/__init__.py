@@ -39,7 +39,9 @@ class MessageType:
     ERROR: Final[str] = "error"
     HELLO: Final[str] = "hello"
 
-    ALL: Final[frozenset[str]] = frozenset({STATE, COMMAND, HEARTBEAT, TELEMETRY, OTA, ACK, ERROR, HELLO})
+    ALL: Final[frozenset[str]] = frozenset(
+        {STATE, COMMAND, HEARTBEAT, TELEMETRY, OTA, ACK, ERROR, HELLO}
+    )
 
 
 # ── MQTT Topic Channels ────────────────────────────────────────────────

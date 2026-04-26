@@ -25,7 +25,11 @@ class SyncAdminClient:
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
-        data = json.dumps(payload, sort_keys=True, separators=(',', ':')).encode("utf-8") if payload else None
+        data = (
+            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            if payload
+            else None
+        )
         req = urllib.request.Request(url, data=data, headers=headers, method=method)
 
         try:
