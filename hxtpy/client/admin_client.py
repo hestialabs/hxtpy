@@ -67,6 +67,97 @@ class SyncAdminClient:
     def list_groups(self) -> dict[str, Any]:
         return self._request("GET", "/groups")
 
+    # ── Provisioning & Lifecycle ────────────────────────────────────────────
+
+    def register_device(
+        self,
+        device_type: str,
+        home_id: str,
+        room_id: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {"device_type": device_type, "home_id": home_id}
+        if room_id:
+            payload["room_id"] = room_id
+        return self._request("POST", "/device/register", payload)
+
+    def rotate_device_secret(self, device_id: str) -> dict[str, Any]:
+        return self._request("POST", f"/device/{device_id}/rotate-secret")
+
+    def revoke_device(self, device_id: str) -> dict[str, Any]:
+        return self._request("POST", f"/device/{device_id}/revoke")
+
+    # ── Home & Room Management ──────────────────────────────────────────────
+
+    def create_home(self, home_name: str, timezone: str | None = None) -> dict[str, Any]:
+        payload: dict[str, Any] = {"home_name": home_name}
+        if timezone:
+            payload["timezone"] = timezone
+        return self._request("POST", "/homes", payload)
+
+    def update_home(
+        self,
+        home_id: str,
+        home_name: str | None = None,
+        timezone: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {}
+        if home_name:
+            payload["home_name"] = home_name
+        if timezone:
+            payload["timezone"] = timezone
+        return self._request("PATCH", f"/homes/{home_id}", payload)
+
+    def delete_home(self, home_id: str) -> dict[str, Any]:
+        return self._request("DELETE", f"/homes/{home_id}")
+
+    def create_room(self, home_id: str, name: str) -> dict[str, Any]:
+        return self._request("POST", f"/homes/{home_id}/rooms", {"name": name})
+
+    def delete_room(self, home_id: str, room_id: str) -> dict[str, Any]:
+        return self._request("DELETE", f"/homes/{home_id}/rooms/{room_id}")
+
+    # ── Group Management ────────────────────────────────────────────────────
+
+    def create_group(
+        self,
+        name: str,
+        slug: str,
+        group_type: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {"name": name, "slug": slug}
+        if group_type:
+            payload["group_type"] = group_type
+        return self._request("POST", "/groups", payload)
+
+    def add_devices_to_group(self, group_id: str, device_ids: list[str]) -> dict[str, Any]:
+        return self._request("POST", f"/groups/{group_id}/devices", {"device_ids": device_ids})
+
+    # ── Firmware ────────────────────────────────────────────────────────────
+
+    def check_firmware_update(
+        self,
+        device_type: str,
+        current_version: str,
+        device_id: str | None = None,
+    ) -> dict[str, Any]:
+        qs = f"?device_type={device_type}&current_version={current_version}"
+        if device_id:
+            qs += f"&device_id={device_id}"
+        return self._request("GET", f"/firmware/check{qs}")
+
+    # ── Capability Manifests ────────────────────────────────────────────────
+
+    def get_device_manifest(self, device_id: str) -> dict[str, Any]:
+        return self._request("GET", f"/devices/{device_id}/manifest")
+
+    def get_manifest_capabilities(self) -> dict[str, Any]:
+        return self._request("GET", "/manifest/capabilities")
+
+    def get_manifest_types(self) -> dict[str, Any]:
+        return self._request("GET", "/manifest/types")
+
+    # ── Command Dispatch ────────────────────────────────────────────────────
+
     def dispatch_command(
         self,
         target_type: str,
