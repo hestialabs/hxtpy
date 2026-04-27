@@ -203,3 +203,56 @@ class SyncAdminClient:
 
     def confirm_command(self, device_id: str, token: str) -> dict[str, Any]:
         return self._request("POST", f"/devices/{device_id}/command/confirm", {"token": token})
+
+    # ── AI Planning ─────────────────────────────────────────────────────────
+
+    def execute_plan(
+        self,
+        plan_name: str,
+        steps: list[dict[str, Any]],
+        execution_mode: str = "sequential",
+        on_failure: str = "rollback_all",
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "name": plan_name,
+            "steps": steps,
+            "execution_mode": execution_mode,
+            "on_failure": on_failure,
+        }
+        return self._request("POST", "/plans", payload)
+
+    def get_plan_status(self, plan_id: str) -> dict[str, Any]:
+        return self._request("GET", f"/plans/{plan_id}")
+
+    # ── AI Identity ─────────────────────────────────────────────────────────
+
+    def write_agent_memory(
+        self,
+        agent_id: str,
+        memory_type: str,
+        content: dict[str, Any],
+        subject: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {"memory_type": memory_type, "content": content}
+        if subject:
+            payload["subject"] = subject
+        return self._request("POST", f"/agents/{agent_id}/memories", payload)
+
+    def get_agent_memories(
+        self,
+        agent_id: str,
+        memory_type: str | None = None,
+        subject: str | None = None,
+    ) -> dict[str, Any]:
+        qs_parts = []
+        if memory_type:
+            qs_parts.append(f"memory_type={memory_type}")
+        if subject:
+            qs_parts.append(f"subject={subject}")
+        qs = "?" + "&".join(qs_parts) if qs_parts else ""
+        return self._request("GET", f"/agents/{agent_id}/memories{qs}")
+
+    # ── State Semantics ─────────────────────────────────────────────────────
+
+    def get_state_verification(self, command_id: str) -> dict[str, Any]:
+        return self._request("GET", f"/state/verification/{command_id}")

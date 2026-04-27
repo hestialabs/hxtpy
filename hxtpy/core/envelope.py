@@ -92,6 +92,7 @@ def build_envelope(
         "version": PROTOCOL_VERSION,
         "message_type": message_type,
         "device_id": device_id,
+        "tenant_id": tenant_id,
         "client_id": client_id or "unknown-client",
         "message_id": message_id,
         "request_id": message_id,  # outbound commands/messages use RID=MID
