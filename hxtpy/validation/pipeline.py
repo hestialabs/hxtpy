@@ -18,11 +18,11 @@ SDK-License-Identifier: MIT
 
 from __future__ import annotations
 
-import json
 import time
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from hxtpy.core.canonical import canonical_params_json
 from hxtpy.core.constants import (
     LEGACY_PROTOCOL_VERSION,
     MAX_MESSAGE_AGE_SEC,
@@ -31,7 +31,6 @@ from hxtpy.core.constants import (
     TIMESTAMP_SKEW_SEC,
     ProtocolError,
 )
-from hxtpy.core.canonical import canonical_params_json
 from hxtpy.core.signing import verify_signature_with_fallback
 from hxtpy.crypto.engine import sha256_hex
 from hxtpy.validation.errors import (

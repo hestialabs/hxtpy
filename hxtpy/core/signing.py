@@ -33,7 +33,10 @@ def sign_message(secret_hex: str, msg: dict[str, Any]) -> str:
     secret_bytes = bytes.fromhex(secret_hex)
     # Exclude signature from the signable payload if present
     signable = {k: v for k, v in msg.items() if k != "signature"}
-    canonical = build_canonical(signable) if signable.get("version") == "HxTP/3.1" else canonical_json(signable)
+    if signable.get("version") == "HxTP/3.1":
+        canonical = build_canonical(signable)
+    else:
+        canonical = canonical_json(signable)
     return sign_hmac_sha256(secret_bytes, canonical)
 
 

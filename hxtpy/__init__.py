@@ -11,8 +11,8 @@ from hxtpy.client.async_client import HxTPClient
 from hxtpy.client.sync_client import SyncHxTPClient
 from hxtpy.core.canonical import (
     build_canonical,
-    canonical_params_json,
     canonical_json,
+    canonical_params_json,
     parse_canonical,
     validate_canonical,
 )

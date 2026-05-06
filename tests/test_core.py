@@ -1,5 +1,3 @@
-import json
-
 from hxtpy.core.canonical import (
     build_canonical,
     canonical_json,
@@ -39,10 +37,8 @@ def test_build_canonical_success() -> None:
         "payload_hash": "hash123",
     }
     canonical = build_canonical(msg)
-    parsed = json.loads(canonical)
-    assert parsed["protocol"] == "hxtp/3.0"
-    assert parsed["device_id"] == "dev-123"
-    assert parsed["sequence_number"] == "1"
+    expected = "HxTP/3.1|dev-123|client-456|msg-789|req-000|1|1713984000|abc|command|hash123"
+    assert canonical == expected
 
 
 def test_parse_canonical() -> None:

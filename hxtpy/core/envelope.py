@@ -12,8 +12,8 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from hxtpy.core.constants import PROTOCOL_VERSION, SECRET_HEX_LENGTH
 from hxtpy.core.canonical import canonical_params_json
+from hxtpy.core.constants import PROTOCOL_VERSION, SECRET_HEX_LENGTH
 from hxtpy.core.nonce import generate_nonce
 from hxtpy.core.signing import sign_message
 from hxtpy.crypto.engine import sha256_hex

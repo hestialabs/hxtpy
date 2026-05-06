@@ -32,8 +32,9 @@ def canonical_json(data: Any) -> str:
             return "true" if val else "false"
         if isinstance(val, (int, float)):
             from decimal import Decimal
+
             # Bit-perfect cross-platform number strategy: Canonical Decimal String
-            d = Decimal(str(val)) if isinstance(val, float) else Decimal(val)
+            d = Decimal(val)
             s = format(d, ".20f").rstrip("0").rstrip(".")
             if s == "" or s == "-0":
                 s = "0"
@@ -55,12 +56,7 @@ def canonical_json(data: Any) -> str:
 def escape_field(s: Any) -> str:
     """Apply HxTP/3.1 backslash escaping and NFC normalization."""
     val = unicodedata.normalize("NFC", str(s))
-    return (
-        val.replace("\\", "\\\\")
-        .replace("|", "\\|")
-        .replace("\n", "\\n")
-        .replace("\r", "\\r")
-    )
+    return val.replace("\\", "\\\\").replace("|", "\\|").replace("\n", "\\n").replace("\r", "\\r")
 
 
 def build_canonical(msg: dict[str, Any]) -> str:
@@ -94,6 +90,7 @@ def canonical_params_json(data: Any) -> str:
             return "true" if val else "false"
         if isinstance(val, (int, float)):
             from decimal import Decimal
+
             d = Decimal(str(val)) if isinstance(val, float) else Decimal(val)
             s = format(d, ".20f").rstrip("0").rstrip(".")
             if s == "" or s == "-0":
