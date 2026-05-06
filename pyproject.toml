@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "hxtpy"
-version = "1.1.0"
+version = "1.1.1"
 description = "Official HxTP/3.0 Python SDK — Protocol reference engine, AI integration layer, automation glue, provisioning toolkit."
 readme = "README.md"
 license = "MIT"

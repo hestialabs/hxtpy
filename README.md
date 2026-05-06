@@ -2,7 +2,11 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/hxtpy.svg)](https://pypi.org/project/hxtpy/)
+[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](https://pypi.org/project/hxtpy/)
+
+**HxTP/3.1** Python Client SDK — A high-performance implementation of the HMAC-SHA256 signed IoT protocol. Features bit-perfect parity with Go, JS, and C++ implementations.
+
+---
 
 ## Installation
 
@@ -10,107 +14,64 @@
 pip install hxtpy
 ```
 
-With MQTT transport support:
-
-```bash
-pip install hxtpy[mqtt]
-```
-
-With development dependencies:
-
-```bash
-pip install hxtpy[all]
-```
+---
 
 ## Quick Start
 
-### Async Client
+### Async Client with MQTT Transport
 
 ```python
 import asyncio
 from hxtpy.client import HxTPClient
+from hxtpy.transport.mqtt import MQTTTransport
+from decimal import Decimal
 
 async def main():
+    # 1. Initialize the Protocol-Bound Client
     client = HxTPClient(
-        url="wss://api.hestialabs.in/ws",
+        url="https://api.hestialabs.in/api/v1",
         tenant_id="your-tenant-uuid",
         device_id="your-device-uuid",
+        client_id="unique-client-id",
         secret="64-char-hex-secret",
     )
 
-    await client.connect()
+    # 2. Use high-performance MQTT transport
+    mqtt = MQTTTransport(url="tcp://broker.hestialabs.in:1883")
+    client.set_transport(mqtt)
+    
+    await mqtt.connect()
 
-    @client.on_message
-    def handle(msg):
-        print(f"Received: {msg}")
+    # 3. Send a signed command with numeric precision
+    response = await client.send_command(
+        device_id="light-1",
+        action="set_level",
+        params={"brightness": Decimal("85.50")} # Bit-perfect decimal parity
+    )
+    
+    print(f"✅ Sent: {response.message_id}")
 
-    response = await client.send_command({
-        "action": "set_pin",
-        "params": {"pin": 13, "value": 1},
-    })
-    print(f"Sent: {response}")
+async def run():
+    await main()
 
-    await client.disconnect()
-
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(run())
 ```
 
-### Sync Client
+---
 
-```python
-from hxtpy.client import SyncHxTPClient
+## 🔐 Protocol Alignment: HxTP/3.1
 
-client = SyncHxTPClient(
-    url="wss://api.hestialabs.in/ws",
-    tenant_id="your-tenant-uuid",
-    device_id="your-device-uuid",
-    secret="64-char-hex-secret",
-)
+This SDK implements HxTP/3.1 with **bit-perfect parity** across the execution stack.
 
-client.connect()
-response = client.send_command({
-    "action": "set_pin",
-    "params": {"pin": 13, "value": 1},
-})
-client.disconnect()
-```
+| Component | Status | Details |
+| :--- | :--- | :--- |
+| **Framing** | ✅ | Pipe-separated (`|`) with mandatory backslash escaping. |
+| **Normalization** | ✅ | Mandatory **Unicode NFC** normalization for all fields. |
+| **Numbers** | ✅ | Deterministic decimal strings via `Decimal`. |
+| **Compliance** | ✅ | Verified against the cross-language compliance suite. |
 
-### Core Protocol Engine (No Networking)
-
-```python
-from hxtpy.core import build_canonical, parse_canonical, validate_canonical
-from hxtpy.crypto import sign_hmac_sha256, sha256_hex, generate_nonce
-
-# Build canonical string
-canonical = build_canonical({
-    "version": "HxTP/3.0",
-    "message_type": "command",
-    "device_id": "device-uuid",
-    "tenant_id": "tenant-uuid",
-    "timestamp": 1708444800,
-    "message_id": "msg-uuid",
-    "nonce": "random-hex-nonce",
-})
-
-# Sign
-secret = bytes.fromhex("a" * 64)
-signature = sign_hmac_sha256(secret, canonical)
-
-# Verify
-from hxtpy.crypto import constant_time_equal
-expected = sign_hmac_sha256(secret, canonical)
-assert constant_time_equal(signature, expected)
-```
-
-### Validation Pipeline
-
-```python
-from hxtpy.validation import validate_message
-
-result = validate_message(msg, secret_hex="your-secret", now_ms=None)
-if not result.ok:
-    print(f"Rejected: {result.code} — {result.reason}")
-```
+---
 
 ## License
 
