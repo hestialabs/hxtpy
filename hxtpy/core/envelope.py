@@ -9,11 +9,11 @@ SDK-License-Identifier: MIT
 
 from __future__ import annotations
 
-import json
 import time
 from typing import Any
 
 from hxtpy.core.constants import PROTOCOL_VERSION, SECRET_HEX_LENGTH
+from hxtpy.core.canonical import canonical_params_json
 from hxtpy.core.nonce import generate_nonce
 from hxtpy.core.signing import sign_message
 from hxtpy.crypto.engine import sha256_hex
@@ -46,6 +46,7 @@ def build_envelope(
     tenant_id: str,
     message_type: str,
     params: dict[str, Any] | None = None,
+    action: str | None = None,
     client_id: str | None = None,
     sequence: int | None = None,
 ) -> dict[str, Any]:
@@ -77,15 +78,14 @@ def build_envelope(
     """
     if not secret_hex or len(secret_hex) != SECRET_HEX_LENGTH:
         raise ValueError(f"Secret must be a {SECRET_HEX_LENGTH}-character hex string (32 bytes).")
+    if not client_id:
+        raise ValueError("client_id is required and must be a UUID string.")
 
     message_id = _generate_uuid4()
     nonce = generate_nonce()
     timestamp = int(time.time() * 1000)
 
-    # Use compact JSON separators — matches JSON.stringify() behavior
-    params_json = json.dumps(
-        params if params is not None else {}, sort_keys=True, separators=(",", ":")
-    )
+    params_json = canonical_params_json(params if params is not None else {})
     payload_hash = sha256_hex(params_json)
 
     msg_fields: dict[str, Any] = {
@@ -93,7 +93,7 @@ def build_envelope(
         "message_type": message_type,
         "device_id": device_id,
         "tenant_id": tenant_id,
-        "client_id": client_id or "unknown-client",
+        "client_id": client_id,
         "message_id": message_id,
         "request_id": message_id,  # outbound commands/messages use RID=MID
         "sequence_number": sequence if sequence is not None else 0,
@@ -101,6 +101,8 @@ def build_envelope(
         "nonce": nonce,
         "payload_hash": payload_hash,
     }
+    if action is not None:
+        msg_fields["action"] = action
 
     envelope: dict[str, Any] = {
         **msg_fields,

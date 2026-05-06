@@ -94,6 +94,8 @@ class HxTPClient:
                 raise ValueError("device_id is required")
             if not secret:
                 raise ValueError("secret is required")
+            if not client_id:
+                raise ValueError("client_id is required")
             if len(secret) != SECRET_HEX_LENGTH:
                 raise ValueError(f"secret must be a {SECRET_HEX_LENGTH}-character hex string")
             self._config = HxTPConfig(
@@ -183,6 +185,11 @@ class HxTPClient:
         """
         if self._transport is None or self._transport.state != TransportState.CONNECTED:
             raise RuntimeError("Not connected")
+        if isinstance(self._transport, WebSocketTransport):
+            raise RuntimeError(
+                "HxTP command execution over WebSocket is not supported by the backend; "
+                "use REST or MQTT ingress."
+            )
 
         if isinstance(payload, dict):
             action = payload.get("action", "")
@@ -201,7 +208,8 @@ class HxTPClient:
             tenant_id=self._config.tenant_id,
             client_id=self._config.client_id,
             message_type=MessageType.COMMAND,
-            params={"action": action, **params},
+            action=action,
+            params=params,
             sequence=self._sequence,
         )
 

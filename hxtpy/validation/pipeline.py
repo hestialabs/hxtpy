@@ -24,12 +24,14 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from hxtpy.core.constants import (
+    LEGACY_PROTOCOL_VERSION,
     MAX_MESSAGE_AGE_SEC,
     MAX_PAYLOAD_BYTES,
     PROTOCOL_VERSION,
     TIMESTAMP_SKEW_SEC,
     ProtocolError,
 )
+from hxtpy.core.canonical import canonical_params_json
 from hxtpy.core.signing import verify_signature_with_fallback
 from hxtpy.crypto.engine import sha256_hex
 from hxtpy.validation.errors import (
@@ -215,7 +217,7 @@ def validate_message(
 
     # ── Step 1: Version ──────────────────────────────────────────
     version = str(msg.get("version") or msg.get("protocol_version") or "")
-    if version != PROTOCOL_VERSION:
+    if version not in {PROTOCOL_VERSION, LEGACY_PROTOCOL_VERSION}:
         return fail_with(
             ProtocolError.VERSION_MISMATCH,
             f"Unsupported version: {version}",
@@ -246,7 +248,7 @@ def validate_message(
     # ── Step 3: Payload Size ─────────────────────────────────────
     params = msg.get("params")
     if params is not None:
-        params_str = json.dumps(params, sort_keys=True, separators=(",", ":"))
+        params_str = canonical_params_json(params)
         if len(params_str.encode("utf-8")) > max_pl:
             return fail_with(
                 ProtocolError.PAYLOAD_TOO_LARGE,
@@ -273,9 +275,7 @@ def validate_message(
     # ── Step 5: Payload Hash ─────────────────────────────────────
     payload_hash = msg.get("payload_hash")
     if payload_hash:
-        params_json = json.dumps(
-            params if params is not None else {}, sort_keys=True, separators=(",", ":")
-        )
+        params_json = canonical_params_json(params if params is not None else {})
         computed = sha256_hex(params_json)
         if computed != payload_hash:
             return fail_with(

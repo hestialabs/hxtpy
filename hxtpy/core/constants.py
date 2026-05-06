@@ -10,6 +10,7 @@ SDK-License-Identifier: MIT
 from hxtpy.core import (
     CANONICAL_SEPARATOR,
     HMAC_HEX_LENGTH,
+    LEGACY_PROTOCOL_VERSION,
     MAX_MESSAGE_AGE_SEC,
     MAX_PAYLOAD_BYTES,
     MIN_NONCE_BYTES,
@@ -27,6 +28,7 @@ from hxtpy.core import (
 
 __all__ = [
     "PROTOCOL_VERSION",
+    "LEGACY_PROTOCOL_VERSION",
     "CANONICAL_SEPARATOR",
     "MAX_MESSAGE_AGE_SEC",
     "TIMESTAMP_SKEW_SEC",
