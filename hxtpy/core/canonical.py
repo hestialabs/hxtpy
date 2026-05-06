@@ -31,8 +31,10 @@ def canonical_json(data: Any) -> str:
         if isinstance(val, bool):
             return "true" if val else "false"
         if isinstance(val, (int, float)):
-            # Bit-perfect cross-platform number strategy
-            s = format(val, ".20f").rstrip("0").rstrip(".")
+            from decimal import Decimal
+            # Bit-perfect cross-platform number strategy: Canonical Decimal String
+            d = Decimal(str(val)) if isinstance(val, float) else Decimal(val)
+            s = format(d, ".20f").rstrip("0").rstrip(".")
             if s == "" or s == "-0":
                 s = "0"
             return f'"{s}"'
@@ -50,24 +52,36 @@ def canonical_json(data: Any) -> str:
     return serialize(data)
 
 
+def escape_field(s: Any) -> str:
+    """Apply HxTP/3.1 backslash escaping and NFC normalization."""
+    val = unicodedata.normalize("NFC", str(s))
+    return (
+        val.replace("\\", "\\\\")
+        .replace("|", "\\|")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+    )
+
+
 def build_canonical(msg: dict[str, Any]) -> str:
-    """Build the HxTP/3.1 10-field pipe canonical string."""
+    """Build the HxTP/3.1 10-field pipe canonical string with mandatory escaping."""
     if "payload_hash" not in msg:
         return canonical_json(msg)
-    return "|".join(
-        [
-            str(msg["version"]),
-            str(msg["device_id"]),
-            str(msg["client_id"]),
-            str(msg["message_id"]),
-            str(msg["request_id"]),
-            str(msg["sequence_number"]),
-            str(msg["timestamp"]),
-            str(msg["nonce"]),
-            str(msg["message_type"]),
-            str(msg["payload_hash"]),
-        ]
-    )
+
+    fields = [
+        msg["version"],
+        msg["device_id"],
+        msg["client_id"],
+        msg["message_id"],
+        msg["request_id"],
+        msg["sequence_number"],
+        msg["timestamp"],
+        msg["nonce"],
+        msg["message_type"],
+        msg["payload_hash"],
+    ]
+
+    return "|".join(escape_field(f) for f in fields)
 
 
 def canonical_params_json(data: Any) -> str:
@@ -79,7 +93,9 @@ def canonical_params_json(data: Any) -> str:
         if isinstance(val, bool):
             return "true" if val else "false"
         if isinstance(val, (int, float)):
-            s = format(val, ".20f").rstrip("0").rstrip(".")
+            from decimal import Decimal
+            d = Decimal(str(val)) if isinstance(val, float) else Decimal(val)
+            s = format(d, ".20f").rstrip("0").rstrip(".")
             if s == "" or s == "-0":
                 s = "0"
             return f'"{s}"'

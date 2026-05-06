@@ -22,8 +22,8 @@ class HxTPConfig:
     tenant_id: str
     device_id: str
     secret: str
-    previous_secret: str | None = None
     client_id: str
+    previous_secret: str | None = None
     transport: Transport | None = None
     replay_protection: bool = True
     max_message_age_sec: int = 300
