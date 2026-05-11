@@ -13,12 +13,12 @@ from hxtpy.core.canonical import (
     build_canonical,
     canonical_json,
     canonical_params_json,
-    parse_canonical,
-    validate_canonical,
 )
 from hxtpy.core.constants import (
     CANONICAL_SEPARATOR,
-    HMAC_HEX_LENGTH,
+    ED25519_PRIV_HEX_LENGTH,
+    ED25519_PUB_HEX_LENGTH,
+    ED25519_SIG_HEX_LENGTH,
     MAX_MESSAGE_AGE_SEC,
     MAX_PAYLOAD_BYTES,
     MIN_NONCE_BYTES,
@@ -40,12 +40,12 @@ from hxtpy.core.signing import (
 )
 from hxtpy.core.topics import build_topic, build_wildcard, parse_topic
 from hxtpy.crypto.engine import (
-    constant_time_equal,
-    sha256_hex,
-    sign_hmac_sha256,
+    generate_nonce as crypto_generate_nonce,
 )
 from hxtpy.crypto.engine import (
-    generate_nonce as crypto_generate_nonce,
+    sha256_hex,
+    sign_ed25519,
+    verify_ed25519,
 )
 from hxtpy.transport.interface import Transport, TransportState
 from hxtpy.validation.errors import (
@@ -71,9 +71,11 @@ __all__ = [
     "TIMESTAMP_SKEW_SEC",
     "NONCE_TTL_SEC",
     "MAX_PAYLOAD_BYTES",
-    "HMAC_HEX_LENGTH",
+    "ED25519_SIG_HEX_LENGTH",
     "SHA256_HEX_LENGTH",
     "MIN_NONCE_BYTES",
+    "ED25519_PUB_HEX_LENGTH",
+    "ED25519_PRIV_HEX_LENGTH",
     "MessageType",
     "Channel",
     "ValidationStep",
@@ -82,8 +84,6 @@ __all__ = [
     "canonical_json",
     "canonical_params_json",
     "build_canonical",
-    "parse_canonical",
-    "validate_canonical",
     "build_envelope",
     "generate_nonce",
     "NonceCache",
@@ -94,9 +94,9 @@ __all__ = [
     "build_wildcard",
     "parse_topic",
     # Crypto
-    "sign_hmac_sha256",
+    "sign_ed25519",
+    "verify_ed25519",
     "sha256_hex",
-    "constant_time_equal",
     "crypto_generate_nonce",
     # Validation
     "validate_message",

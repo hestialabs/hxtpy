@@ -21,9 +21,11 @@ class HxTPConfig:
     url: str
     tenant_id: str
     device_id: str
-    secret: str
+    private_key_hex: str
     client_id: str
-    previous_secret: str | None = None
+    public_key_hex: str = ""
+    previous_private_key_hex: str | None = None
+    previous_public_key_hex: str | None = None
     transport: Transport | None = None
     replay_protection: bool = True
     max_message_age_sec: int = 300

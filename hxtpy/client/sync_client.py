@@ -41,7 +41,7 @@ class SyncHxTPClient:
             url="wss://api.hestialabs.in/ws",
             tenant_id="tenant-uuid",
             device_id="device-uuid",
-            secret="64-char-hex-secret",
+            private_key_hex="64-char-hex-private-key",
         )
         client.connect()
         response = client.send_command({"action": "set_pin", "params": {"pin": 13}})
@@ -53,10 +53,10 @@ class SyncHxTPClient:
         url: str | None = None,
         tenant_id: str | None = None,
         device_id: str | None = None,
-        secret: str | None = None,
+        private_key_hex: str | None = None,
         *,
         config: HxTPConfig | None = None,
-        previous_secret: str | None = None,
+        previous_private_key_hex: str | None = None,
         client_id: str | None = None,
         transport: Transport | None = None,
         replay_protection: bool = True,
@@ -72,9 +72,9 @@ class SyncHxTPClient:
             url=url,
             tenant_id=tenant_id,
             device_id=device_id,
-            secret=secret,
+            private_key_hex=private_key_hex,
             config=config,
-            previous_secret=previous_secret,
+            previous_private_key_hex=previous_private_key_hex,
             client_id=client_id,
             transport=transport,
             replay_protection=replay_protection,

@@ -1,5 +1,5 @@
 """
-HXTP Core — HMAC-SHA256 Message Signing and Verification.
+HXTP Core — Ed25519 Message Signing and Verification.
 
 Copyright (c) 2026 Hestia Labs
 SDK-License-Identifier: MIT
@@ -10,23 +10,13 @@ from __future__ import annotations
 from typing import Any
 
 from hxtpy.core.canonical import build_canonical, canonical_json
-from hxtpy.core.constants import ED25519_SIG_HEX_LENGTH, SECRET_HEX_LENGTH
+from hxtpy.core.constants import ED25519_PRIV_HEX_LENGTH, ED25519_SIG_HEX_LENGTH
 from hxtpy.crypto.engine import sign_ed25519, verify_ed25519
 
 
 def sign_message(private_key_hex: str, msg: dict[str, Any]) -> str:
-    """
-    Sign a message with Ed25519 over the canonical string.
-
-    Args:
-        private_key_hex: 64-char hex-encoded private key seed (32 bytes).
-        msg: Message fields for canonical string construction.
-
-    Returns:
-        128-char lowercase hex Ed25519 signature.
-    """
-    if not private_key_hex or len(private_key_hex) != SECRET_HEX_LENGTH:
-        raise ValueError(f"Private key must be a {SECRET_HEX_LENGTH}-character hex string.")
+    if not private_key_hex or len(private_key_hex) != ED25519_PRIV_HEX_LENGTH:
+        raise ValueError(f"Private key must be a {ED25519_PRIV_HEX_LENGTH}-character hex string.")
     priv_bytes = bytes.fromhex(private_key_hex)
     signable = {k: v for k, v in msg.items() if k != "signature"}
     if signable.get("version") == "HxTP/3.1":

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import unicodedata
-from typing import Any, cast
+from typing import Any
 
 
 def canonical_json(data: Any) -> str:
@@ -114,16 +114,3 @@ def canonical_params_json(data: Any) -> str:
 
     return serialize(data if data is not None else {})
 
-
-def parse_canonical(canonical: str) -> dict[str, Any]:
-    """Legacy helper (Deprecated — use JSON parsing)."""
-    return cast("dict[str, Any]", json.loads(canonical))
-
-
-def validate_canonical(canonical: str) -> bool:
-    """Legacy helper (Deprecated)."""
-    try:
-        json.loads(canonical)
-        return True
-    except Exception:
-        return False

@@ -1,8 +1,7 @@
 """
-HXTP Crypto Engine — SHA-256, HMAC-SHA256, constant-time compare, nonce generation.
+HXTP Crypto Engine — Ed25519 signing, SHA-256 hashing, public key derivation.
 
-Uses only Python stdlib: hmac, hashlib, secrets, time.
-No third-party crypto libraries.
+Uses only Python stdlib and the `cryptography` package for Ed25519.
 
 Copyright (c) 2026 Hestia Labs
 SDK-License-Identifier: MIT
@@ -11,13 +10,7 @@ SDK-License-Identifier: MIT
 from __future__ import annotations
 
 import hashlib
-import hmac as _hmac
 import secrets
-
-
-def sign_hmac_sha256(secret: bytes, data: str) -> str:
-    """Compute HMAC-SHA256 and return lowercase hex string (64 chars)."""
-    return _hmac.new(secret, data.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def sign_ed25519(private_key_seed: bytes, data: str) -> str:
@@ -55,6 +48,13 @@ def verify_ed25519(public_key: bytes, data: str, signature_hex: str) -> bool:
         return False
 
 
+def get_public_key(private_key_seed: bytes) -> bytes:
+    """Derive Ed25519 public key from 32-byte private seed."""
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    priv_key = ed25519.Ed25519PrivateKey.from_private_bytes(private_key_seed)
+    return priv_key.public_key().public_bytes_raw()
+
+
 def sha256_hex(data: str) -> str:
     """
     Compute SHA-256 hash and return lowercase hex string (64 chars).
@@ -66,24 +66,6 @@ def sha256_hex(data: str) -> str:
         64-character lowercase hex SHA-256 digest.
     """
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
-
-
-def constant_time_equal(a: str, b: str) -> bool:
-    """
-    Constant-time string comparison.
-
-    Safe for comparing HMAC hex digests — prevents timing side-channels.
-    Uses ``hmac.compare_digest`` which is the Python stdlib constant-time
-    comparison function (wraps OpenSSL ``CRYPTO_memcmp``).
-
-    Args:
-        a: First string.
-        b: Second string.
-
-    Returns:
-        True if strings are equal, False otherwise.
-    """
-    return _hmac.compare_digest(a, b)
 
 
 def generate_nonce(byte_length: int = 16) -> str:
@@ -99,33 +81,3 @@ def generate_nonce(byte_length: int = 16) -> str:
         Hex-encoded nonce string (byte_length * 2 chars).
     """
     return secrets.token_bytes(byte_length).hex()
-
-
-def random_bytes(length: int) -> bytes:
-    """
-    Generate cryptographically secure random bytes.
-
-    Args:
-        length: Number of bytes.
-
-    Returns:
-        Random bytes.
-    """
-    return secrets.token_bytes(length)
-
-
-def bytes_to_hex(data: bytes) -> str:
-    """Convert bytes to lowercase hex string."""
-    return data.hex()
-
-
-def hex_to_bytes(hex_str: str) -> bytes:
-    """
-    Convert hex string to bytes.
-
-    Raises:
-        ValueError: If hex string has odd length or invalid chars.
-    """
-    if len(hex_str) % 2 != 0:
-        raise ValueError("Invalid hex string length")
-    return bytes.fromhex(hex_str)

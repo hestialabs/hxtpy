@@ -13,7 +13,7 @@ import time
 from typing import Any
 
 from hxtpy.core.canonical import canonical_params_json
-from hxtpy.core.constants import PROTOCOL_VERSION, SECRET_HEX_LENGTH
+from hxtpy.core.constants import ED25519_PRIV_HEX_LENGTH, PROTOCOL_VERSION
 from hxtpy.core.nonce import generate_nonce
 from hxtpy.core.signing import sign_message
 from hxtpy.crypto.engine import sha256_hex
@@ -41,7 +41,7 @@ def _generate_uuid4() -> str:
 
 def build_envelope(
     *,
-    secret_hex: str,
+    private_key_hex: str,
     device_id: str,
     tenant_id: str,
     message_type: str,
@@ -58,11 +58,11 @@ def build_envelope(
       2. Generate nonce (16 random bytes, hex-encoded)
       3. Compute payload_hash (SHA-256 of JSON.stringify(params))
       4. Build canonical string
-      5. Compute HMAC-SHA256 signature
+      5. Compute Ed25519 signature
       6. Return complete envelope
 
     Args:
-        secret_hex: 64-char hex-encoded shared secret.
+        private_key_hex: 64-char hex-encoded private key seed.
         device_id: Device UUID.
         tenant_id: Tenant UUID.
         message_type: Message type string (e.g., "command", "heartbeat").
@@ -74,10 +74,12 @@ def build_envelope(
         Complete signed envelope dictionary.
 
     Raises:
-        ValueError: If secret is not a valid 64-character hex string.
+        ValueError: If private key is not a valid 64-character hex string.
     """
-    if not secret_hex or len(secret_hex) != SECRET_HEX_LENGTH:
-        raise ValueError(f"Secret must be a {SECRET_HEX_LENGTH}-character hex string (32 bytes).")
+    if not private_key_hex or len(private_key_hex) != ED25519_PRIV_HEX_LENGTH:
+        raise ValueError(
+            f"Private key must be a {ED25519_PRIV_HEX_LENGTH}-character hex string (32 bytes)."
+        )
     if not client_id:
         raise ValueError("client_id is required and must be a UUID string.")
 
@@ -109,7 +111,7 @@ def build_envelope(
         "params": params if params is not None else {},
     }
 
-    signature = sign_message(secret_hex, envelope)
+    signature = sign_message(private_key_hex, envelope)
     envelope["signature"] = signature
 
     return envelope
