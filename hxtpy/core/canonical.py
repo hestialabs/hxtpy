@@ -67,6 +67,7 @@ def build_canonical(msg: dict[str, Any]) -> str:
     fields = [
         msg["version"],
         msg["device_id"],
+        msg["tenant_id"],
         msg["client_id"],
         msg["message_id"],
         msg["request_id"],

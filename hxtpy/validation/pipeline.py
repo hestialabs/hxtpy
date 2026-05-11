@@ -8,7 +8,7 @@ FROZEN pipeline order:
   4. Nonce uniqueness
   5. Payload hash verification
   6. Sequence monotonicity
-  7. HMAC-SHA256 signature verification (with dual-key fallback)
+  7. Ed25519 signature verification (with dual-key fallback)
 
 ANY failure → reject immediately. No fallback. No soft-fail.
 
@@ -109,8 +109,8 @@ class SequenceTracker:
 class ValidationOptions:
     """Options for the validation pipeline."""
 
-    active_secret: str
-    previous_secret: str | None = None
+    active_public_key: str
+    previous_public_key: str | None = None
     nonce_cache: NonceCache | None = None
     sequence_tracker: SequenceTracker | None = None
     max_message_age_sec: int = MAX_MESSAGE_AGE_SEC
@@ -147,8 +147,8 @@ def _fail(code: str, reason: str) -> ValidationResult:
 def validate_message(
     msg: dict[str, Any],
     *,
-    secret_hex: str | None = None,
-    previous_secret_hex: str | None = None,
+    public_key_hex: str | None = None,
+    previous_public_key_hex: str | None = None,
     nonce_cache: NonceCache | None = None,
     sequence_tracker: SequenceTracker | None = None,
     max_message_age_sec: int = MAX_MESSAGE_AGE_SEC,
@@ -186,8 +186,8 @@ def validate_message(
     """
     # Resolve options
     if opts is not None:
-        active_secret = opts.active_secret
-        prev_secret = opts.previous_secret
+        active_pub = opts.active_public_key
+        prev_pub = opts.previous_public_key
         nc = opts.nonce_cache
         st = opts.sequence_tracker
         max_age = opts.max_message_age_sec
@@ -195,8 +195,8 @@ def validate_message(
         max_pl = opts.max_payload_bytes
         now = opts.now_ms
     else:
-        active_secret = secret_hex or ""
-        prev_secret = previous_secret_hex
+        active_pub = public_key_hex or ""
+        prev_pub = previous_public_key_hex
         nc = nonce_cache
         st = sequence_tracker
         max_age = max_message_age_sec
@@ -303,16 +303,16 @@ def validate_message(
             SignatureMissingError,
         )
 
-    if not active_secret:
+    if not active_pub:
         return fail_with(
             ProtocolError.SECRET_MISSING,
-            "No secret available for verification",
+            "No public key available for verification",
             InvalidSignatureError,
         )
 
     valid, rotated = verify_signature_with_fallback(
-        active_secret_hex=active_secret,
-        previous_secret_hex=prev_secret,
+        active_public_key_hex=active_pub,
+        previous_public_key_hex=prev_pub,
         msg=msg,
         signature=signature,
     )
@@ -320,7 +320,7 @@ def validate_message(
     if not valid:
         return fail_with(
             ProtocolError.SIGNATURE_INVALID,
-            "HMAC-SHA256 verification failed",
+            "Ed25519 verification failed",
             InvalidSignatureError,
         )
 

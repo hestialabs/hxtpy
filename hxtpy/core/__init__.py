@@ -17,10 +17,11 @@ MAX_MESSAGE_AGE_SEC: Final[int] = 30
 TIMESTAMP_SKEW_SEC: Final[int] = 5
 NONCE_TTL_SEC: Final[int] = 60
 MAX_PAYLOAD_BYTES: Final[int] = 16_384
-HMAC_HEX_LENGTH: Final[int] = 64
+ED25519_SIG_HEX_LENGTH: Final[int] = 128
 SHA256_HEX_LENGTH: Final[int] = 64
 MIN_NONCE_BYTES: Final[int] = 16
-SECRET_BYTES: Final[int] = 32
+ED25519_PUB_HEX_LENGTH: Final[int] = 64
+ED25519_PRIV_HEX_LENGTH: Final[int] = 64
 SECRET_HEX_LENGTH: Final[int] = 64
 
 

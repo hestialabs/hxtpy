@@ -16,17 +16,43 @@ import secrets
 
 
 def sign_hmac_sha256(secret: bytes, data: str) -> str:
+    """Compute HMAC-SHA256 and return lowercase hex string (64 chars)."""
+    return _hmac.new(secret, data.encode("utf-8"), hashlib.sha256).hexdigest()
+
+
+def sign_ed25519(private_key_seed: bytes, data: str) -> str:
     """
-    Compute HMAC-SHA256 and return lowercase hex string (64 chars).
+    Sign data using Ed25519 and return hex signature (128 chars).
 
     Args:
-        secret: Raw secret bytes (32 bytes).
-        data: UTF-8 string to sign.
-
-    Returns:
-        64-character lowercase hex HMAC-SHA256 digest.
+        private_key_seed: 32-byte private key seed.
+        data: String data to sign.
     """
-    return _hmac.new(secret, data.encode("utf-8"), hashlib.sha256).hexdigest()
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    priv_key = ed25519.Ed25519PrivateKey.from_private_bytes(private_key_seed)
+    signature = priv_key.sign(data.encode("utf-8"))
+    return signature.hex()
+
+
+def verify_ed25519(public_key: bytes, data: str, signature_hex: str) -> bool:
+    """
+    Verify an Ed25519 signature.
+
+    Args:
+        public_key: 32-byte public key.
+        data: Signed data string.
+        signature_hex: 128-char hex signature.
+    """
+    from cryptography.exceptions import InvalidSignature
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    pub_key = ed25519.Ed25519PublicKey.from_public_bytes(public_key)
+    try:
+        pub_key.verify(bytes.fromhex(signature_hex), data.encode("utf-8"))
+        return True
+    except (InvalidSignature, ValueError):
+        return False
 
 
 def sha256_hex(data: str) -> str:
