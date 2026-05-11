@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](https://pypi.org/project/hxtpy/)
 
-**HxTP/3.1** Python Client SDK — A high-performance implementation of the HMAC-SHA256 signed IoT protocol. Features bit-perfect parity with Go, JS, and C++ implementations.
+**HxTP/3.1** Python Client SDK — A high-performance implementation of the Ed25519-signed IoT protocol. Features bit-perfect parity with Go, JS, and C++ implementations.
 
 ---
 
@@ -33,7 +33,7 @@ async def main():
         tenant_id="your-tenant-uuid",
         device_id="your-device-uuid",
         client_id="unique-client-id",
-        secret="64-char-hex-secret",
+        private_key_hex="64-char-hex-private-key",
     )
 
     # 2. Use high-performance MQTT transport
