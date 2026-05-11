@@ -79,6 +79,7 @@ class TestCore(unittest.TestCase):
         from hxtpy.core.envelope import build_envelope
         from hxtpy.crypto.engine import get_public_key
         from hxtpy.validation.pipeline import validate_message
+
         private_key_bytes = b"a" * 32
         private_key = private_key_bytes.hex()
         public_key = get_public_key(private_key_bytes).hex()
@@ -103,6 +104,7 @@ class TestCore(unittest.TestCase):
         result = validate_message(envelope, public_key_hex=public_key)
         self.assertFalse(result.ok)
         self.assertEqual(result.code, "VERSION_MISMATCH")
+
 
 if __name__ == "__main__":
     unittest.main()

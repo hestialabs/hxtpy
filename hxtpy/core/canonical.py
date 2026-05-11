@@ -113,4 +113,3 @@ def canonical_params_json(data: Any) -> str:
         raise TypeError(f"HXTP_CANONICAL_ERROR: Unsupported type {type(val)}")
 
     return serialize(data if data is not None else {})
-

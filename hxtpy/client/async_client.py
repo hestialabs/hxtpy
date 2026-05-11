@@ -192,9 +192,7 @@ class HxTPClient:
             },
             sequence=0,
         )
-        await self._transport.send(
-            json.dumps(envelope, sort_keys=True, separators=(",", ":"))
-        )
+        await self._transport.send(json.dumps(envelope, sort_keys=True, separators=(",", ":")))
 
     async def disconnect(self) -> None:
         """Disconnect gracefully and release resources."""
@@ -286,9 +284,7 @@ class HxTPClient:
             RuntimeError: If not in ACTIVE lifecycle.
         """
         if self._lifecycle != LifecycleState.ACTIVE:
-            raise RuntimeError(
-                f"Cannot send {message_type}: lifecycle is not ACTIVE"
-            )
+            raise RuntimeError(f"Cannot send {message_type}: lifecycle is not ACTIVE")
         if self._transport is None or self._transport.state != TransportState.CONNECTED:
             raise RuntimeError("Not connected")
 

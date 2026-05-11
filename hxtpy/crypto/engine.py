@@ -51,6 +51,7 @@ def verify_ed25519(public_key: bytes, data: str, signature_hex: str) -> bool:
 def get_public_key(private_key_seed: bytes) -> bytes:
     """Derive Ed25519 public key from 32-byte private seed."""
     from cryptography.hazmat.primitives.asymmetric import ed25519
+
     priv_key = ed25519.Ed25519PrivateKey.from_private_bytes(private_key_seed)
     return priv_key.public_key().public_bytes_raw()
 
