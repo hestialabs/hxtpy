@@ -1,10 +1,10 @@
 import unittest
 
-from hxtpy.core.canonical import (
+from hxtp_py.core.canonical import (
     build_canonical,
     canonical_json,
 )
-from hxtpy.core.constants import PROTOCOL_VERSION
+from hxtp_py.core.constants import PROTOCOL_VERSION
 
 
 class TestCore(unittest.TestCase):
@@ -47,7 +47,7 @@ class TestCore(unittest.TestCase):
         self.assertEqual(canonical, expected)
 
     def test_crypto_engine(self) -> None:
-        from hxtpy.crypto.engine import (
+        from hxtp_py.crypto.engine import (
             generate_nonce,
             get_public_key,
             sha256_hex,
@@ -76,9 +76,9 @@ class TestCore(unittest.TestCase):
         self.assertEqual(len(n), 32)
 
     def test_validation_pipeline(self) -> None:
-        from hxtpy.core.envelope import build_envelope
-        from hxtpy.crypto.engine import get_public_key
-        from hxtpy.validation.pipeline import validate_message
+        from hxtp_py.core.envelope import build_envelope
+        from hxtp_py.crypto.engine import get_public_key
+        from hxtp_py.validation.pipeline import validate_message
 
         private_key_bytes = b"a" * 32
         private_key = private_key_bytes.hex()

@@ -12,11 +12,11 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from hxtpy.core.canonical import canonical_params_json
-from hxtpy.core.constants import ED25519_PRIV_HEX_LENGTH, PROTOCOL_VERSION
-from hxtpy.core.nonce import generate_nonce
-from hxtpy.core.signing import sign_message
-from hxtpy.crypto.engine import sha256_hex
+from hxtp_py.core.canonical import canonical_params_json
+from hxtp_py.core.constants import ED25519_PRIV_HEX_LENGTH, PROTOCOL_VERSION
+from hxtp_py.core.nonce import generate_nonce
+from hxtp_py.core.signing import sign_message
+from hxtp_py.crypto.engine import sha256_hex
 
 
 def _generate_uuid4() -> str:

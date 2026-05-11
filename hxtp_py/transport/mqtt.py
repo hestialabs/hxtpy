@@ -14,9 +14,9 @@ import json
 import logging
 from typing import TYPE_CHECKING, Any
 
-from hxtpy.core.constants import Channel, MessageType
-from hxtpy.core.topics import build_topic
-from hxtpy.transport.interface import Transport, TransportState
+from hxtp_py.core.constants import Channel, MessageType
+from hxtp_py.core.topics import build_topic
+from hxtp_py.transport.interface import Transport, TransportState
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -28,7 +28,7 @@ try:
 except ImportError:
     _HAS_GMQTT = False
 
-Log = logging.getLogger("hxtpy.transport.mqtt")
+Log = logging.getLogger("hxtp_py.transport.mqtt")
 
 
 class MqttTransport(Transport):

@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from hxtpy.core.canonical import build_canonical, canonical_json
-from hxtpy.core.constants import ED25519_PRIV_HEX_LENGTH, ED25519_SIG_HEX_LENGTH
-from hxtpy.crypto.engine import sign_ed25519, verify_ed25519
+from hxtp_py.core.canonical import build_canonical, canonical_json
+from hxtp_py.core.constants import ED25519_PRIV_HEX_LENGTH, ED25519_SIG_HEX_LENGTH
+from hxtp_py.crypto.engine import sign_ed25519, verify_ed25519
 
 
 def sign_message(private_key_hex: str, msg: dict[str, Any]) -> str:

@@ -28,20 +28,20 @@ import time
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from hxtpy.client.types import (
+from hxtp_py.client.types import (
     HxTPCommandPayload,
     HxTPConfig,
     HxTPErrorEvent,
     HxTPMessageEvent,
     HxTPResponse,
 )
-from hxtpy.core.constants import ED25519_PRIV_HEX_LENGTH, MessageType
-from hxtpy.core.envelope import build_envelope
-from hxtpy.core.nonce import NonceCache
-from hxtpy.crypto.engine import get_public_key
-from hxtpy.transport.interface import Transport, TransportState
-from hxtpy.transport.websocket import WebSocketTransport
-from hxtpy.validation.pipeline import validate_message
+from hxtp_py.core.constants import ED25519_PRIV_HEX_LENGTH, MessageType
+from hxtp_py.core.envelope import build_envelope
+from hxtp_py.core.nonce import NonceCache
+from hxtp_py.crypto.engine import get_public_key
+from hxtp_py.transport.interface import Transport, TransportState
+from hxtp_py.transport.websocket import WebSocketTransport
+from hxtp_py.validation.pipeline import validate_message
 
 if TYPE_CHECKING:
     from collections.abc import Callable

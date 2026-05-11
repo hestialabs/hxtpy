@@ -7,14 +7,14 @@ SDK-License-Identifier: MIT
 
 from __future__ import annotations
 
-from hxtpy.client.async_client import HxTPClient
-from hxtpy.client.sync_client import SyncHxTPClient
-from hxtpy.core.canonical import (
+from hxtp_py.client.async_client import HxTPClient
+from hxtp_py.client.sync_client import SyncHxTPClient
+from hxtp_py.core.canonical import (
     build_canonical,
     canonical_json,
     canonical_params_json,
 )
-from hxtpy.core.constants import (
+from hxtp_py.core.constants import (
     CANONICAL_SEPARATOR,
     ED25519_PRIV_HEX_LENGTH,
     ED25519_PUB_HEX_LENGTH,
@@ -31,24 +31,24 @@ from hxtpy.core.constants import (
     ProtocolError,
     ValidationStep,
 )
-from hxtpy.core.envelope import build_envelope
-from hxtpy.core.nonce import NonceCache, generate_nonce
-from hxtpy.core.signing import (
+from hxtp_py.core.envelope import build_envelope
+from hxtp_py.core.nonce import NonceCache, generate_nonce
+from hxtp_py.core.signing import (
     sign_message,
     verify_signature,
     verify_signature_with_fallback,
 )
-from hxtpy.core.topics import build_topic, build_wildcard, parse_topic
-from hxtpy.crypto.engine import (
+from hxtp_py.core.topics import build_topic, build_wildcard, parse_topic
+from hxtp_py.crypto.engine import (
     generate_nonce as crypto_generate_nonce,
 )
-from hxtpy.crypto.engine import (
+from hxtp_py.crypto.engine import (
     sha256_hex,
     sign_ed25519,
     verify_ed25519,
 )
-from hxtpy.transport.interface import Transport, TransportState
-from hxtpy.validation.errors import (
+from hxtp_py.transport.interface import Transport, TransportState
+from hxtp_py.validation.errors import (
     ExpiredTimestampError,
     HxTPValidationError,
     InvalidSignatureError,
@@ -57,7 +57,7 @@ from hxtpy.validation.errors import (
     ReplayAttackError,
     SequenceViolationError,
 )
-from hxtpy.validation.pipeline import validate_message
+from hxtp_py.validation.pipeline import validate_message
 
 __version__ = "1.0.9"
 

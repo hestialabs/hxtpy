@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
-name = "hxtpy"
+name = "hxtp-py"
 version = "1.2.0"
 description = "Official HxTP/3.0 Python SDK — Protocol reference engine, AI integration layer, automation glue, provisioning toolkit."
 readme = "README.md"
@@ -13,7 +13,7 @@ requires-python = ">=3.10"
 authors = [
     { name = "Hestia Labs", email = "contact@hestialabs.in" },
 ]
-keywords = ["hxtpy", "iot", "protocol", "mqtt", "embedded", "security", "hmac", "automation"]
+keywords = ["hxtp-py", "iot", "protocol", "mqtt", "embedded", "security", "ed25519", "automation"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -42,17 +42,18 @@ dev = [
     "mypy>=1.8",
     "ruff>=0.3",
 ]
-all = ["hxtpy[mqtt,dev]"]
+all = ["hxtp-py[mqtt,dev]"]
 
 
 [project.urls]
-Homepage = "https://github.com/hestialabs/hxtpy"
-Documentation = "https://docs.hestialabs.in/"
-Repository = "https://github.com/hestialabs/hxtpy"
-Issues = "https://github.com/hestialabs/hxtpy/issues"
+Homepage = "https://github.com/hestialabs/hxtp-py"
+
+Repository = "https://github.com/hestialabs/hxtp-py"
+
+Issues = "https://github.com/hestialabs/hxtp-py/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["hxtpy"]
+packages = ["hxtp_py"]
 
 [tool.mypy]
 python_version = "3.10"
