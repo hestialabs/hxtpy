@@ -1,158 +1,137 @@
 name: Build & Publish
 
 on:
-  push:
-    tags: ["v*"]
-    paths:
-      - "hxtp_py/**"
-      - "tests/**"
-      - "pyproject.toml"
-      - ".github/workflows/pypi-publish.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "hxtp_py/**"
-      - "tests/**"
-      - "pyproject.toml"
-      - ".github/workflows/pypi-publish.yml"
+    push:
+        tags: ["v*"]
+        paths:
+            - "hxtp_py/**"
+            - "tests/**"
+            - "pyproject.toml"
+            - ".github/workflows/pypi-publish.yml"
+    pull_request:
+        branches: [main]
+        paths:
+            - "hxtp_py/**"
+            - "tests/**"
+            - "pyproject.toml"
+            - ".github/workflows/pypi-publish.yml"
 
 jobs:
-  # ── CI: Lint, Typecheck, Test ────────────────────────────────────
-  ci:
-    name: CI — Python ${{ matrix.python-version }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-    steps:
-      - name: Checkout repository
-       uses: actions/checkout@v4
+    ci:
+        name: CI - Python ${{ matrix.python-version }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                python-version: ["3.10", "3.11", "3.12", "3.13"]
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ matrix.python-version }}
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -e ".[dev]"
+            - name: Lint (ruff)
+              run: ruff check hxtp_py/ tests/
+            - name: Format check (ruff)
+              run: ruff format --check hxtp_py/ tests/
+            - name: Typecheck (mypy)
+              run: mypy hxtp_py/
+            - name: Test (pytest)
+              run: pytest
 
-      - name: Set up Python ${{ matrix.python-version }}
-       uses: actions/setup-python@v5
-       with:
-         python-version: ${{ matrix.python-version }}
+    build:
+        name: Build sdist & wheel
+        needs: ci
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+            - name: Install build tools
+              run: pip install --upgrade pip build
+            - name: Build package
+              run: python -m build
+            - name: Upload dist artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: python-dist
+                  path: dist/
+                  retention-days: 7
 
-      - name: Install dependencies
-       run: |
-         python -m pip install --upgrade pip
-         pip install -e ".[dev]"
+    publish:
+        name: Publish to PyPI
+        needs: build
+        runs-on: ubuntu-latest
+        environment: pypi_key
+        permissions:
+            id-token: write
+            contents: write
+        steps:
+            - uses: actions/checkout@v4
+            - name: Read version from pyproject.toml
+              id: version
+              run: |
+                  VERSION=$(python -c "
+                  import re
+                  with open('pyproject.toml') as f:
+                      match = re.search(r'^version\s*=\s*[\"\'](.+?)[\"\"]', f.read(), re.MULTILINE)
+                      print(match.group(1) if match else '')
+                  ")
+                  echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+                  echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+                  echo "Detected version: $VERSION"
+            - name: Check if version already on PyPI
+              id: check
+              run: |
+                  VERSION="${{ steps.version.outputs.version }}"
+                  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/hxtp-py/${VERSION}/json")
+                  if [ "$HTTP_CODE" = "200" ]; then
+                      echo "already_published=true" >> "$GITHUB_OUTPUT"
+                      echo "Version ${VERSION} already on PyPI - skipping publish."
+                  else
+                      echo "already_published=false" >> "$GITHUB_OUTPUT"
+                      echo "Version ${VERSION} not on PyPI - will publish."
+                  fi
+            - name: Download dist artifacts
+              if: steps.check.outputs.already_published == 'false'
+              uses: actions/download-artifact@v4
+              with:
+                  name: python-dist
+                  path: dist/
+            - name: Publish to PyPI
+              if: steps.check.outputs.already_published == 'false'
+              uses: pypa/gh-action-pypi-publish@release/v1
+              with:
+                  password: ${{ secrets.PYPI_TOKEN }}
+            - name: Create GitHub Release
+              if: steps.check.outputs.already_published == 'false'
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: py-v${{ steps.version.outputs.version }}
+                  name: "hxtp-py ${{ steps.version.outputs.version }}"
+                  generate_release_notes: true
+                  body: |
+                      ## hxtp-py ${{ steps.version.outputs.version }}
 
-      - name: Lint (ruff)
-       run: ruff check hxtp_py/ tests/
+                      **PyPI:** [hxtp-py v${{ steps.version.outputs.version }}](https://pypi.org/project/hxtp-py/${{ steps.version.outputs.version }}/)
 
-      - name: Format check (ruff)
-       run: ruff format --check hxtp_py/ tests/
+                      ### Installation
+                      ```bash
+                      pip install hxtp-py==${{ steps.version.outputs.version }}
+                      ```
 
-      - name: Typecheck (mypy)
-       run: mypy hxtp_py/
+                      ### With MQTT support
+                      ```bash
+                      pip install "hxtp-py[mqtt]==${{ steps.version.outputs.version }}"
+                      ```
 
-      - name: Test (pytest)
-       run: pytest
-
-  # ── Build distribution ───────────────────────────────────────────
-  build:
-    name: Build sdist & wheel
-    needs: ci
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-       uses: actions/checkout@v4
-
-      - name: Set up Python
-       uses: actions/setup-python@v5
-       with:
-         python-version: "3.12"
-
-      - name: Install build tools
-       run: pip install --upgrade pip build
-
-      - name: Build package
-       run: python -m build
-
-      - name: Upload dist artifacts
-       uses: actions/upload-artifact@v4
-       with:
-         name: python-dist
-         path: dist/
-         retention-days: 7
-
-  # ── Publish to PyPI ──────────────────────────────────────────────
-  publish:
-    name: Publish to PyPI
-    needs: build
-    runs-on: ubuntu-latest
-    environment: pypi_key
-    permissions:
-      id-token: write
-      contents: write
-    steps:
-      - name: Checkout repository
-       uses: actions/checkout@v4
-
-      - name: Read version from pyproject.toml
-       id: version
-       run: |
-         VERSION=$(python -c "
-         import re
-         with open('pyproject.toml') as f:
-           match = re.search(r'^version\s*=\s*[\"\'](.+?)[\"\']', f.read(), re.MULTILINE)
-           print(match.group(1) if match else '')
-         ")
-         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-         echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
-         echo "Detected version: $VERSION"
-
-      - name: Check if version already on PyPI
-       id: check
-       run: |
-         VERSION="${{ steps.version.outputs.version }}"
-         HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/hxtp-py/${VERSION}/json")
-         if [ "$HTTP_CODE" = "200" ]; then
-          echo "already_published=true" >> "$GITHUB_OUTPUT"
-          echo " Version ${VERSION} already on PyPI — skipping publish."
-         else
-          echo "already_published=false" >> "$GITHUB_OUTPUT"
-          echo "Version ${VERSION} not on PyPI — will publish."
-         fi
-
-      - name: Download dist artifacts
-       if: steps.check.outputs.already_published == 'false'
-       uses: actions/download-artifact@v4
-       with:
-         name: python-dist
-         path: dist/
-
-      - name: Publish to PyPI
-       if: steps.check.outputs.already_published == 'false'
-       uses: pypa/gh-action-pypi-publish@release/v1
-       with:
-         password: ${{ secrets.PYPI_TOKEN }}
-
-      - name: Create GitHub Release
-       if: steps.check.outputs.already_published == 'false'
-       uses: softprops/action-gh-release@v2
-       with:
-         tag_name: py-v${{ steps.version.outputs.version }}
-         name: "hxtp-py ${{ steps.version.outputs.version }}"
-         generate_release_notes: true
-         body: |
-           ## hxtp-py ${{ steps.version.outputs.version }} 
-
-           **PyPI:**[hxtp-py v${{ steps.version.outputs.version }}](https://pypi.org/project/hxtp-py/${{ steps.version.outputs.version }}/)
-
-           ### Installation
-           ```bash
-           pip install hxtp-py==${{ steps.version.outputs.version }}
-           ```
-
-           ### With MQTT support
-           ```bash
-           pip install "hxtp-py[mqtt]==${{ steps.version.outputs.version }}"
-           ```
-
-           ---
-           *Release generated automatically based on pyproject.toml version bump.*
-         make_latest: true
+                      ---
+                      *Release generated automatically based on pyproject.toml version bump.*
+                  make_latest: true
