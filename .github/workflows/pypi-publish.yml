@@ -141,7 +141,7 @@ jobs:
          body: |
            ## hxtp-py ${{ steps.version.outputs.version }} 
 
-           **PyPI:** [hxtp-py v${{ steps.version.outputs.version }}](https://pypi.org/project/hxtp-py/${{ steps.version.outputs.version }}/)
+           **PyPI:**[hxtp-py v${{ steps.version.outputs.version }}](https://pypi.org/project/hxtp-py/${{ steps.version.outputs.version }}/)
 
            ### Installation
            ```bash

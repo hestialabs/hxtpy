@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](https://pypi.org/project/hxtp-py/)
 
-**HxTP/3.1** Python Client SDK — A high-performance implementation of the Ed25519-signed IoT protocol. Features bit-perfect parity with Go, JS, and C++ implementations.
+**HxTP/3.1**Python Client SDK — A high-performance implementation of the Ed25519-signed IoT protocol. Features bit-perfect parity with Go, JS, and C++ implementations.
 
 ---
 
@@ -62,14 +62,14 @@ if __name__ == "__main__":
 
 ## Protocol Alignment: HxTP/3.1
 
-This SDK implements HxTP/3.1 with **bit-perfect parity** across the execution stack.
+This SDK implements HxTP/3.1 with **bit-perfect parity**across the execution stack.
 
 | Component | Status | Details |
 | :--- | :--- | :--- |
-| **Framing** | | Pipe-separated (`|`) with mandatory backslash escaping. |
-| **Normalization** | | Mandatory **Unicode NFC** normalization for all fields. |
-| **Numbers** | | Deterministic decimal strings via `Decimal`. |
-| **Compliance** | | Verified against the cross-language compliance suite. |
+| **Framing**| | Pipe-separated (`|`) with mandatory backslash escaping. |
+| **Normalization**| | Mandatory **Unicode NFC**normalization for all fields. |
+| **Numbers**| | Deterministic decimal strings via `Decimal`. |
+| **Compliance**| | Verified against the cross-language compliance suite. |
 
 ---
 
