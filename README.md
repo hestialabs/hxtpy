@@ -37,7 +37,7 @@ async def main():
   )
 
   # 2. Use high-performance MQTT transport
-  mqtt = MQTTTransport(url="tcp://broker.hestialabs.in:1883")
+  mqtt = MQTTTransport(url="tcp://mqtt.hestialabs.in:1883")
   client.set_transport(mqtt)
   
   await mqtt.connect()
